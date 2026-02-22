@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertOrderSchema, orders } from './schema';
+import { insertOrderSchema, orders, songs, siteContent, insertSongSchema, insertContentSchema } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -30,6 +30,40 @@ export const api = {
       },
     }
   },
+  songs: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/songs' as const,
+      responses: {
+        200: z.array(z.custom<typeof songs.$inferSelect>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/songs' as const,
+      input: insertSongSchema,
+      responses: {
+        201: z.custom<typeof songs.$inferSelect>(),
+      },
+    }
+  },
+  content: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/content' as const,
+      responses: {
+        200: z.array(z.custom<typeof siteContent.$inferSelect>()),
+      },
+    },
+    update: {
+      method: 'POST' as const,
+      path: '/api/content' as const,
+      input: z.object({ key: z.string(), value: z.string() }),
+      responses: {
+        200: z.custom<typeof siteContent.$inferSelect>(),
+      },
+    }
+  }
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
@@ -47,3 +81,5 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
 export type OrderInput = z.infer<typeof api.orders.create.input>;
 export type OrderResponse = z.infer<typeof api.orders.create.responses[201]>;
 export type OrdersListResponse = z.infer<typeof api.orders.list.responses[200]>;
+export type SongResponse = z.infer<typeof api.songs.list.responses[200]>[number];
+export type ContentResponse = z.infer<typeof api.content.list.responses[200]>[number];
