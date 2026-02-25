@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { PlayCircle, Shield, Users, ChevronLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PlayCircle, Shield, Users, ChevronLeft, Music } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { MerchCard } from "@/components/MerchCard";
 import { CartDrawer, type CartItem } from "@/components/CartDrawer";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Static images imports
 import logo1 from "@assets/IMG_6514_1771755047663.jpeg";
 import logo2 from "@assets/IMG_6515_1771755047663.webp";
 
-// Mock products data
 const PRODUCTS = [
   { id: "1", name: "קפוצ'ון פלוגתי", price: 120, imagePlaceholder: "HOODIE", requiresSize: true },
   { id: "2", name: "חולצת טריקו", price: 50, imagePlaceholder: "T-SHIRT", requiresSize: true },
@@ -19,29 +19,47 @@ const PRODUCTS = [
   { id: "5", name: "פאצ' פלוגתי", price: 20, imagePlaceholder: "PATCH", requiresSize: false },
 ];
 
+const UNIT_SONGS = [
+  { 
+    title: "שיר סוגרי השבתות (המרכזי)", 
+    content: `יום רביעי, הסופ״ש כבר מורגש בידיים\nמדי א בשלוף בארון\nהסמל אומר תכין כומתה תגלחצ נעליים\nאתה עולה משפט למ״פ אתה נכנס\nהנה יום הדין הגיע.\nפתאום אני טיפה לחוץ שולף תירוץ אחרי תירוץ\nעל המפ זה לא משפיע\n\nבהלצ שישי בצהריים\nסופ שבוע זה רק אני בס והממ של שתיים\nכל הנבחרים פה בפלוגה\nהתחצפות כוננות והפקרה אחד גם על חצי מימיה\nהנה עוד שיחה מאמא\nיא איבני איך אתה תלמד\nלא מטווסים עם כל אחד\nהשארת אותנו פה לבד…\n\nיום ראשון\nאמא אומרת הגזמת\nתיזהר\nהשבת אצל סבא וסבתא\nאני אומר לה תירגעי\nהשבוע אני נקי\nלא יהיה פה שום אירוע\n\nכל השבוע אני ספץ פתאום המפקד שוב מתפוצץ\nבסהכ רציתי פיצה`,
+    special: true 
+  },
+  { 
+    title: "שיר למ״פ", 
+    content: `טירונות הנפצות ואבנונים\nחצי פלוגה פה חדולים\nהמפ מנפיץ את המפקדים\nגם אם נראה שהשחר לא יפציע לעולם\nהנה בא מ״פ חדש\nגם אם זה נראה שהשחר לא יפציע לעולם\nיאללה כולם תעשו כאן רעש\n\nמ״פ נעול, חולה על בית\nיושב לו בול במדים של זית\nאין בלבולי מח הוא נשבע\nנעלמו החדולים מהפלוגה`
+  },
+  { 
+    title: "שיר למ״מ (העכבר)", 
+    content: `היה היה מ״מ, קראו לו העכבר,\nתפקיד אחרי תפקיד בבהלת תמיד היום כל זה נגמר x2.\nאווו הוא עולה לגדוד הוא עולה לגדוד הוא עולה לגדוד הוא עולה לגדוד.`
+  },
+  { title: "שיר למפקד אמיר", content: "המפקד אמיר, יאללה המפקד אמיר, יאללה המפקד אמיר, יאללה המפקד אמיר" },
+  { title: "שיר למחלקה 4", content: "מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4 יותר חזק מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4" }
+];
+
 export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setGalleryIndex((prev) => (prev + 1) % 4);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const addToCart = (product: typeof PRODUCTS[0]) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
-        return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
       }
       return [...prev, { ...product, quantity: 1 }];
     });
   };
 
   const updateQuantity = (id: string, delta: number) => {
-    setCart(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQ = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQ };
-      }
-      return item;
-    }));
+    setCart(prev => prev.map(item => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item));
   };
 
   const updateSize = (id: string, size: string) => {
@@ -56,196 +74,81 @@ export default function Home() {
     <div className="min-h-screen bg-background" dir="rtl">
       <Navbar />
 
-   {/* HERO SECTION */}
-  <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-    <div className="absolute inset-0 z-0">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background z-10" />
-      {/* Abstract background pattern for engineering corps feeling */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
-      <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/20 blur-[120px] rounded-full" />
-    </div>
-
-    <div className="container mx-auto px-4 md:px-6 relative z-10">
-      <div className="flex flex-col items-center justify-center text-center gap-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-3xl space-y-6"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-medium text-sm mb-2 mx-auto">
-            <Shield className="w-4 h-4" />
-            חיל ההנדסה הקרבית
-          </div>
-          
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1]">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-red-800">
-              פלוגה 603
-            </span>
-          </h1>
-          
-          {/* הוספת התאריך בקטן מתחת לכותרת */}
-          <p className="text-xl md:text-2xl font-bold text-muted-foreground tracking-widest uppercase opacity-80">
-            אוגוסט 2025
-          </p>
-
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            ברוכים הבאים לאתר הרשמי של הפלוגה. כאן תמצאו את המורשת, התמונות, השירים והמרצ'נדייז שלנו. תמיד ראשונים, תמיד מוכנים.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <Button size="lg" className="h-14 px-8 text-lg rounded-xl" asChild>
-              <a href="#store">הזמנת ציוד פלוגתי</a>
-            </Button>
-            <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-xl gap-2" asChild>
-              <a href="#songs">
-                <PlayCircle className="w-5 h-5" />
-                שירי הפלוגה
-              </a>
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  </section>
-
-
-      {/* ABOUT SECTION */}
-      <section id="about" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">מי אנחנו?</h2>
-              <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
+      {/* HERO SECTION */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden text-center">
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-background via-background/90 to-background" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-medium text-sm mb-2 mx-auto">
+              <Shield className="w-4 h-4" /> חיל ההנדסה הקרבית
             </div>
-            
-            <div className="bg-card rounded-3xl p-8 md:p-12 shadow-xl border border-border/50 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full" />
-              <div className="flex flex-col md:flex-row gap-8 items-center relative z-10">
-                <div className="w-48 h-48 shrink-0 rounded-2xl overflow-hidden shadow-lg border-2 border-border">
-                  <img src={logo2} alt="סמל פלוגה" className="w-full h-full object-cover" />
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold flex items-center gap-2">
-                    <Users className="text-primary w-6 h-6" />
-                    מורשת וגאווה
-                  </h3>
-                  <p className="text-muted-foreground text-lg leading-relaxed">
-                    פלוגה 603 מהווה חוד החנית של חיל ההנדסה הקרבית. אנו מתמחים בפריצת מכשולים, חבלה, לוחמת מנהרות וסיוע הנדסי בתמרון. הלוחמים שלנו נבחרים בקפידה ועוברים מסלול הכשרה מפרך כדי להיות המקצועיים ביותר בשדה הקרב.
-                  </p>
-                </div>
-              </div>
+            <h1 className="text-6xl md:text-8xl font-black tracking-tight"><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-red-800">פלוגה 603</span></h1>
+            <p className="text-xl md:text-2xl font-bold text-muted-foreground tracking-widest uppercase opacity-80">אוגוסט 2025</p>
+            <div className="flex justify-center gap-4 pt-4">
+              <Button size="lg" className="h-14 px-8 rounded-xl" asChild><a href="#store">הזמנת ציוד</a></Button>
+              <Button size="lg" variant="outline" className="h-14 px-8 rounded-xl gap-2" asChild><a href="#songs"><PlayCircle className="w-5 h-5" />שירי פלוגה</a></Button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* GALLERY PLACEHOLDER */}
-      <section id="gallery" className="py-20">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex justify-between items-end mb-10">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">גלריית תמונות</h2>
-              <div className="w-20 h-1.5 bg-primary rounded-full" />
-            </div>
-            <Button variant="ghost" className="gap-2 hidden sm:flex" asChild>
-              <a href="https://drive.google.com/drive/folders/1y_eIUF4puky1ez8i0vH0Ml_ytEYgvFRZ" target="_blank" rel="noreferrer">
-                צפה בכל התמונות בדרייב
-                <ChevronLeft className="w-4 h-4" />
-              </a>
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-square bg-muted rounded-2xl overflow-hidden relative group">
-                <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/80 text-zinc-500 font-bold p-6 text-center z-0">
-                  תמונה מהדרייב מתעדכנת
-                </div>
-                <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
-                  <Button variant="secondary" size="sm">הגדל תמונה</Button>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="mt-8 text-center sm:hidden">
-            <Button variant="outline" className="gap-2 w-full" asChild>
-              <a href="https://drive.google.com/drive/folders/1y_eIUF4puky1ez8i0vH0Ml_ytEYgvFRZ" target="_blank" rel="noreferrer">
-                צפה בכל התמונות בדרייב
-              </a>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* SONGS SECTION */}
-      <section id="songs" className="py-20 bg-zinc-950 text-white relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">שירים ומורל</h2>
-            <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
-            <p className="mt-6 text-zinc-400 max-w-2xl mx-auto text-lg">
-              הקליפ הרשמי של הפלוגה. שימו פליי, תגבירו את הווליום.
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-zinc-800 bg-zinc-900 aspect-video md:aspect-[21/9]">
-            <iframe 
-              width="100%" 
-              height="100%" 
-              src="https://www.youtube.com/embed/euG7A3CuIlI?si=T6jS4qDFrta6oAGZ" 
-              title="YouTube video player" 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
-          </div>
-        </div>
-      </section>
-
-      {/* MERCH STORE */}
-      <section id="store" className="py-24 relative">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-4xl md:text-5xl font-black mb-4">חנות הפלוגה</h2>
-            <div className="w-24 h-2 bg-primary mx-auto rounded-full mb-6" />
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              הצטיידו בציוד הרשמי של פלוגה 603. בחרו את הפריטים והוסיפו לסל כדי לבצע הזמנה מסודרת.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {PRODUCTS.map(product => (
-              <MerchCard 
-                key={product.id}
-                {...product}
-                onAdd={() => addToCart(product)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="bg-zinc-950 text-zinc-400 py-12 border-t border-zinc-900">
+      {/* GALLERY (CAROUSEL) */}
+      <section id="gallery" className="py-20 bg-muted/20">
         <div className="container mx-auto px-4 text-center">
-          <Shield className="w-10 h-10 text-primary mx-auto mb-6 opacity-50" />
-          <h3 className="text-xl font-bold text-white mb-2">פלוגה 603 - חיל ההנדסה הקרבית</h3>
-          <p className="text-sm opacity-60">האתר נבנה בגאווה עבור לוחמי הפלוגה.</p>
+          <h2 className="text-4xl font-bold mb-10">הגלריה שלנו</h2>
+          <div className="relative max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-background group bg-zinc-900">
+            <AnimatePresence mode="wait">
+              <motion.div key={galleryIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.7 }} className="absolute inset-0 flex items-center justify-center text-zinc-500 font-bold">
+                 תמונה מהמסלול {galleryIndex + 1}
+              </motion.div>
+            </AnimatePresence>
+            <div className="absolute bottom-6 right-6 z-10"><Button variant="secondary" size="sm" asChild><a href="https://drive.google.com/drive/folders/1y_eIUF4puky1ez8i0vH0Ml_ytEYgvFRZ" target="_blank">לדרייב המלא</a></Button></div>
+          </div>
         </div>
+      </section>
+
+      {/* SONGS SECTION (YOUTUBE + TEXT) */}
+      <section id="songs" className="py-24 bg-zinc-950 text-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black italic text-primary">שירי הפלוגה והמורל</h2>
+            <div className="w-24 h-1.5 bg-primary mx-auto mt-4 rounded-full" />
+          </div>
+
+          {/* הוידאו נשאר כאן - לא נמחק! */}
+          <div className="max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-zinc-800 bg-zinc-900 aspect-video mb-20">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/euG7A3CuIlI" title="YouTube" frameBorder="0" allowFullScreen></iframe>
+          </div>
+
+          {/* הוספת הטקסטים מתחת לוידאו */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-right">
+            {UNIT_SONGS.map((song, i) => (
+              <Card key={i} className={`border-none shadow-2xl ${song.special ? 'md:col-span-2 bg-primary/10 border border-primary/20' : 'bg-zinc-900'}`}>
+                <CardContent className="p-8">
+                  <h3 className={`text-2xl font-bold mb-6 italic ${song.special ? 'text-primary' : 'text-zinc-100'}`}>{song.title}</h3>
+                  <p className="text-lg leading-relaxed whitespace-pre-line text-zinc-300 italic">{song.content}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* STORE */}
+      <section id="store" className="py-24"><div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-black mb-12">חנות הפלוגה</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 text-right">
+            {PRODUCTS.map(p => <MerchCard key={p.id} {...p} onAdd={() => addToCart(p)} />)}
+          </div>
+      </div></section>
+
+      <footer className="bg-zinc-950 py-12 border-t border-zinc-900 text-center text-zinc-500">
+        <Shield className="w-10 h-10 text-primary mx-auto mb-4 opacity-50" />
+        <p className="font-bold text-white">פלוגה 603 - חיל ההנדסה הקרבית</p>
       </footer>
 
-      {/* Global Cart Drawer */}
-      <CartDrawer 
-        items={cart}
-        updateQuantity={updateQuantity}
-        updateSize={updateSize}
-        removeItem={removeItem}
-        clearCart={() => setCart([])}
-      />
+      <CartDrawer items={cart} updateQuantity={updateQuantity} updateSize={updateSize} removeItem={removeItem} clearCart={() => setCart([])} />
     </div>
   );
 }
+
