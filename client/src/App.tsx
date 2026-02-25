@@ -7,6 +7,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 // Pages
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
+import SongsPage from "./pages/Songs";        // ייבוא דף השירים החדש
+import FullGallery from "./pages/FullGallery"; // ייבוא דף הגלריה החדש
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -14,6 +16,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/admin" component={Admin} />
+      <Route path="/songs" component={SongsPage} />      {/* נתיב לדף השירים */}
+      <Route path="/gallery" component={FullGallery} />  {/* נתיב לדף הגלריה */}
       <Route component={NotFound} />
     </Switch>
   );
