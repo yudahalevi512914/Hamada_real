@@ -183,12 +183,9 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
-                מורשת <span className="text-primary italic">בצלילים</span>
+                שירי <span className="text-primary italic">הפלוגה</span>
               </h2>
               <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
-              <p className="mt-6 text-zinc-400 max-w-xl mx-auto text-lg">
-                צפו בקליפ הפלוגה הרשמי. לכל שירי המורל והטקסטים, לחצו על הכפתור למטה.
-              </p>
             </motion.div>
           </div>
 
