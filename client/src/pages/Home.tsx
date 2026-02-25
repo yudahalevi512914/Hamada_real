@@ -169,66 +169,65 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* SONGS SECTION (YOUTUBE + LINK TO PAGE) */}
-      <section id="songs" className="py-24 bg-zinc-950 relative overflow-hidden">
-        {/* אפקט תאורה עדין ברקע */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.05)_0%,transparent_70%)]" />
+       {/* SONGS SECTION - UPDATED DESIGN */}
+      <section id="songs" className="py-24 bg-[#09090b] relative overflow-hidden">
+        {/* אפקט תאורה אחורי חזק יותר להפרדה */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
             >
-              <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4 tracking-tight">
-                מורשת <span className="text-primary">בצלילים</span>
+              <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
+                מורשת <span className="text-primary italic">בצלילים</span>
               </h2>
-              <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-6" />
-              <p className="text-zinc-400 max-w-xl mx-auto text-lg leading-relaxed">
-                צפו בקליפ הפלוגה הרשמי והתחברו לאווירה. 
-                לכל שירי המורל והטקסטים, לחצו על הכפתור למטה.
+              <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
+              <p className="mt-6 text-zinc-400 max-w-xl mx-auto text-lg">
+                צפו בקליפ הפלוגה הרשמי. לכל שירי המורל והטקסטים, לחצו על הכפתור למטה.
               </p>
             </motion.div>
           </div>
 
-          {/* נגן וידאו עם מסגרת מעוצבת */}
-          <div className="max-w-4xl mx-auto mb-16">
-            <div className="relative aspect-video rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 bg-zinc-900 group">
+          {/* וידאו עם אפקט Hover */}
+          <div className="max-w-4xl mx-auto mb-16 px-2">
+            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/5 bg-zinc-900 group">
               <iframe 
                 width="100%" 
                 height="100%" 
                 src="https://www.youtube.com/embed/euG7A3CuIlI" 
-                title="YouTube video player" 
+                title="YouTube" 
                 frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowFullScreen
-                className="w-full h-full grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700"
+                className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity duration-500"
               ></iframe>
             </div>
           </div>
 
-          {/* כפתור מעוצב מחדש - זכוכית וזהב */}
-          <div className="flex justify-center">
+          {/* כפתור "זכוכית" משופר */}
+          <div className="flex justify-center pb-8">
             <Link href="/songs">
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative flex items-center gap-4 px-10 py-5 bg-zinc-900/50 backdrop-blur-md border border-primary/30 rounded-2xl text-white overflow-hidden transition-all hover:border-primary"
+                whileHover={{ scale: 1.05, translateY: -5 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative flex items-center gap-5 px-8 py-5 bg-zinc-900/80 backdrop-blur-xl border border-primary/40 rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:border-primary transition-all duration-300"
               >
-                {/* אפקט תאורה פנימי בתוך הכפתור */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                {/* Glow effect on hover */}
+                <div className="absolute inset-0 rounded-2xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 
-                <div className="bg-primary/20 p-3 rounded-xl group-hover:bg-primary/30 transition-colors">
+                <div className="relative z-10 bg-primary/20 p-3 rounded-xl">
                   <Music className="w-6 h-6 text-primary" />
                 </div>
                 
-                <div className="text-right">
-                  <span className="block text-xs uppercase tracking-widest text-primary font-bold">לכל הטקסטים</span>
-                  <span className="block text-xl font-bold italic">שירי ומורלי הפלוגה</span>
+                <div className="relative z-10 text-right">
+                  <span className="block text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-1">Lyrics Archive</span>
+                  <span className="block text-xl font-bold tracking-tight">שירי ומורלי הפלוגה</span>
                 </div>
 
-                <ChevronLeft className="w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:-translate-x-1 transition-all" />
+                <ChevronLeft className="relative z-10 w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </motion.button>
             </Link>
           </div>
