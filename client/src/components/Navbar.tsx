@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react"; // הסרתי את ShieldAlert כי שמנו לוגו
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import logo1 from "@assets/logo1.png"; // ייבוא הלוגו שלך
+import logo1 from "@assets/IMG_6514_1771755047663.jpeg"; // ייבוא הלוגו שלך
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
