@@ -12,12 +12,43 @@ import logo1 from "@assets/IMG_6514_1771755047663.jpeg";
 import logo2 from "@assets/IMG_6515_1771755047663.webp";
 
 const PRODUCTS = [
-  { id: "1", name: "קפוצ'ון פלוגתי", price: 120, imagePlaceholder: "HOODIE", requiresSize: true },
-  { id: "2", name: "חולצת טריקו", price: 50, imagePlaceholder: "T-SHIRT", requiresSize: true },
-  { id: "3", name: "חולצת דרייפיט", price: 60, imagePlaceholder: "DRI-FIT", requiresSize: true },
-  { id: "4", name: "כובע טקטי", price: 40, imagePlaceholder: "HAT", requiresSize: false },
-  { id: "5", name: "פאצ' פלוגתי", price: 20, imagePlaceholder: "PATCH", requiresSize: false },
+  { 
+    id: "1", 
+    name: "קפוצ'ון פלוגתי", 
+    price: 120, 
+    images: ["/images/products/drifit-1.jpg", "/images/products/drifit-1.jpg"],
+    requiresSize: true 
+  },
+  { 
+    id: "2", 
+    name: "חולצת טריקו", 
+    price: 50, 
+    images: ["/images/products/drifit-1.jpg", "/images/products/drifit-1.jpg"],
+    requiresSize: true 
+  },
+  { 
+    id: "3", 
+    name: "חולצת דרייפיט", 
+    price: 60, 
+    images: ["/images/products/drifit-1.jpg", "/images/products/drifit-2.jpg"],
+    requiresSize: true 
+  },
+  { 
+    id: "4", 
+    name: "כובע טקטי", 
+    price: 40, 
+    images: ["/images/products/hat-1.jpg", "/images/products/hat-2.jpg", "/images/products/hat-3.jpg", "/images/products/hat-4.jpg"],
+    requiresSize: false 
+  },
+  { 
+    id: "5", 
+    name: "פאצ' פלוגתי", 
+    price: 20, 
+    images: ["/images/products/patch-1.jpg", "/images/products/patch-2.jpg"],
+    requiresSize: false 
+  },
 ];
+
 
 export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
