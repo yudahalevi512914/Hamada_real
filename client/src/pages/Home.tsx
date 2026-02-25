@@ -92,48 +92,78 @@ export default function Home() {
         </div>
       </section>
 
-      {/* GALLERY (CAROUSEL) */}
+            {/* GALLERY (CAROUSEL) */}
       <section id="gallery" className="py-20 bg-muted/20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-10">הגלריה שלנו</h2>
+          <div className="mb-10">
+            <h2 className="text-4xl font-bold mb-4">הגלריה שלנו</h2>
+            <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
+          </div>
+          
           <div className="relative max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-background group bg-zinc-900">
             <AnimatePresence mode="wait">
-              <motion.div key={galleryIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.7 }} className="absolute inset-0 flex items-center justify-center text-zinc-500 font-bold">
+              <motion.div 
+                key={galleryIndex} 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }} 
+                transition={{ duration: 0.7 }} 
+                className="absolute inset-0 flex items-center justify-center text-zinc-500 font-bold"
+              >
+                 {/* כאן ה-Carousel ממשיך לרוץ כקדימון */}
                  תמונה מהמסלול {galleryIndex + 1}
               </motion.div>
             </AnimatePresence>
-            <div className="absolute bottom-6 right-6 z-10"><Button variant="secondary" size="sm" asChild><a href="https://drive.google.com/drive/folders/1y_eIUF4puky1ez8i0vH0Ml_ytEYgvFRZ" target="_blank">לדרייב המלא</a></Button></div>
+            
+            <div className="absolute bottom-6 right-6 z-10">
+              <Link href="/gallery">
+                <Button variant="secondary" size="lg" className="rounded-xl font-bold shadow-lg">
+                  לצפייה בכל התמונות באתר
+                  <ChevronLeft className="ms-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* SONGS SECTION (YOUTUBE + TEXT) */}
-      <section id="songs" className="py-24 bg-zinc-950 text-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black italic text-primary">שירי הפלוגה והמורל</h2>
-            <div className="w-24 h-1.5 bg-primary mx-auto mt-4 rounded-full" />
+      {/* SONGS SECTION (YOUTUBE + LINK TO PAGE) */}
+      <section id="songs" className="py-24 bg-zinc-950 text-white relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-4xl md:text-5xl font-black italic text-primary mb-4">שירי הפלוגה והמורל</h2>
+            <div className="w-24 h-1.5 bg-primary mx-auto rounded-full" />
+            <p className="mt-6 text-zinc-400 max-w-2xl mx-auto text-lg">
+              צפו בקליפ הפלוגה הרשמי ולחצו למטה כדי לראות את כל שירי המורל והטקסטים של 603.
+            </p>
           </div>
 
-          {/* הוידאו נשאר כאן - לא נמחק! */}
-          <div className="max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-zinc-800 bg-zinc-900 aspect-video mb-20">
-            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/euG7A3CuIlI" title="YouTube" frameBorder="0" allowFullScreen></iframe>
+          {/* סרטון היוטיוב המרכזי */}
+          <div className="max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-zinc-800 bg-zinc-900 aspect-video mb-12">
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src="https://www.youtube.com/embed/euG7A3CuIlI" 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
           </div>
 
-          {/* הוספת הטקסטים מתחת לוידאו */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-right">
-            {UNIT_SONGS.map((song, i) => (
-              <Card key={i} className={`border-none shadow-2xl ${song.special ? 'md:col-span-2 bg-primary/10 border border-primary/20' : 'bg-zinc-900'}`}>
-                <CardContent className="p-8">
-                  <h3 className={`text-2xl font-bold mb-6 italic ${song.special ? 'text-primary' : 'text-zinc-100'}`}>{song.title}</h3>
-                  <p className="text-lg leading-relaxed whitespace-pre-line text-zinc-300 italic">{song.content}</p>
-                </CardContent>
-              </Card>
-            ))}
+          {/* כפתור מעבר לעמוד השירים המלא */}
+          <div className="text-center">
+            <Link href="/songs">
+              <Button size="lg" className="h-16 px-12 text-xl rounded-2xl gap-3 shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:scale-105 transition-transform">
+                <Music className="w-6 h-6" />
+                לכל שירי ומורלי הפלוגה (טקסטים)
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
-
       {/* STORE */}
       <section id="store" className="py-24"><div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-black mb-12">חנות הפלוגה</h2>
