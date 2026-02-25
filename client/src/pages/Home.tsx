@@ -220,8 +220,8 @@ export default function Home() {
                 </div>
                 
                 <div className="relative z-10 text-right">
-                  <span className="block text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-1">Lyrics Archive</span>
-                  <span className="block text-xl font-bold tracking-tight">שירי ומורלי הפלוגה</span>
+                  <span className="block text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-1"></span>
+                  <span className="block text-xl font-bold tracking-tight">כל השירים</span>
                 </div>
 
                 <ChevronLeft className="relative z-10 w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:-translate-x-1 transition-all" />
