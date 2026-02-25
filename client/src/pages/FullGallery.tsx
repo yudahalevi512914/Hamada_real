@@ -3,10 +3,11 @@ import { ChevronRight, ImageIcon } from "lucide-react";
 import { Link } from "wouter";
 
 // הפונקציה הזו סורקת את כל קבצי ה-jpg, jpeg, png ו-webp בתיקייה שציינת
-const imageModules = import.meta.glob("@attached_assets/pictures/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}", { 
+const imageModules = import.meta.glob("../../attached_assets/pictures/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}", { 
   eager: true, 
   as: 'url' 
 });
+
 
 // הופך את האובייקט לרשימה של כתובות (URLs)
 const allImages = Object.values(imageModules);
