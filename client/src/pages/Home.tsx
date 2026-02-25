@@ -56,67 +56,59 @@ export default function Home() {
     <div className="min-h-screen bg-background" dir="rtl">
       <Navbar />
 
-      {/* HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background z-10" />
-          {/* Abstract background pattern for engineering corps feeling */}
-          <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
-          <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/20 blur-[120px] rounded-full" />
-        </div>
+   {/* HERO SECTION */}
+  <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+    <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background z-10" />
+      {/* Abstract background pattern for engineering corps feeling */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
+      <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/20 blur-[120px] rounded-full" />
+    </div>
 
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="flex-1 space-y-6 text-center md:text-start"
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-medium text-sm mb-2">
-                <Shield className="w-4 h-4" />
-                חיל ההנדסה הקרבית
-              </div>
-              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1]">
-                משפחת <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-red-800">
-                  פלוגה 603
-                </span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto md:mx-0 leading-relaxed">
-                ברוכים הבאים לאתר הרשמי של הפלוגה. כאן תמצאו את המורשת, התמונות, השירים והמרצ'נדייז שלנו. תמיד ראשונים, תמיד מוכנים.
-              </p>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-4">
-                <Button size="lg" className="h-14 px-8 text-lg rounded-xl" asChild>
-                  <a href="#store">הזמנת ציוד פלוגתי</a>
-                </Button>
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-xl gap-2" asChild>
-                  <a href="#songs">
-                    <PlayCircle className="w-5 h-5" />
-                    האזינו להמנון
-                  </a>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex-1 relative w-full max-w-md mx-auto"
-            >
-              <div className="relative aspect-square">
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-full blur-3xl animate-pulse" />
-                <img 
-                  src={logo1} 
-                  alt="סמל פלוגה 603" 
-                  className="relative z-10 w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-            </motion.div>
+    <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="flex flex-col items-center justify-center text-center gap-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl space-y-6"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-medium text-sm mb-2 mx-auto">
+            <Shield className="w-4 h-4" />
+            חיל ההנדסה הקרבית
           </div>
-        </div>
-      </section>
+          
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-red-800">
+              פלוגה 603
+            </span>
+          </h1>
+          
+          {/* הוספת התאריך בקטן מתחת לכותרת */}
+          <p className="text-xl md:text-2xl font-bold text-muted-foreground tracking-widest uppercase opacity-80">
+            אוגוסט 2025
+          </p>
+
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            ברוכים הבאים לאתר הרשמי של הפלוגה. כאן תמצאו את המורשת, התמונות, השירים והמרצ'נדייז שלנו. תמיד ראשונים, תמיד מוכנים.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <Button size="lg" className="h-14 px-8 text-lg rounded-xl" asChild>
+              <a href="#store">הזמנת ציוד פלוגתי</a>
+            </Button>
+            <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-xl gap-2" asChild>
+              <a href="#songs">
+                <PlayCircle className="w-5 h-5" />
+                שירי הפלוגה
+              </a>
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  </section>
+
 
       {/* ABOUT SECTION */}
       <section id="about" className="py-20 bg-muted/30">
