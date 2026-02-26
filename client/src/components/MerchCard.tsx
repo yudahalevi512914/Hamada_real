@@ -19,11 +19,9 @@ interface MerchCardProps {
 export function MerchCard({ product, addToCart }: MerchCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // הגנה ובדיקת תמונות
   const images = product?.images || [];
   const hasMultiple = images.length > 1;
 
-  // החלפה אוטומטית (Auto-play) כל 4 שניות
   useEffect(() => {
     if (!hasMultiple) return;
     const timer = setInterval(() => {
@@ -42,10 +40,10 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
       whileHover={{ y: -8 }}
       className="group relative bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/40 transition-all duration-500 shadow-2xl"
     >
-      {/* אזור התמונה - יחס 4:5 נותן מראה של קטלוג אופנה */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-zinc-950 flex items-center justify-center">
+      {/* אזור התמונה - חזרה לרקע האפור המקורי (zinc-900) */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900 flex items-center justify-center">
         
-        {/* אינדיקטורים דקים בסגנון אינסטגרם סטורי */}
+        {/* אינדיקטורים דקים */}
         {hasMultiple && (
           <div className="absolute top-5 inset-x-6 z-30 flex gap-1.5">
             {images.map((_, i) => (
@@ -86,11 +84,10 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
           </AnimatePresence>
         </div>
 
-        {/* שכבת הצללה דקורטיבית בתחתית */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent pointer-events-none" />
+        {/* שכבת הצללה עדינה */}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 via-transparent to-transparent pointer-events-none" />
       </div>
 
-      {/* פרטי המוצר המעוצבים */}
       <div className="p-7 text-right" dir="rtl">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors duration-300">
@@ -116,7 +113,6 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
         </Button>
       </div>
 
-      {/* אפקט Glow בפינה שמופיע ב-Hover */}
       <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-primary/10 blur-[60px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
     </motion.div>
   );
