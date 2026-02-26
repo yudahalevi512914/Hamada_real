@@ -21,9 +21,9 @@ const PRODUCTS = [
   },
   { 
     id: "2", 
-    name: "חולצת טריקו", 
+    name: "חולצת דרייפיט", 
     price: 50, 
-    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
+    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-2.PNG", "/image/products/drifit-3.PNG", "/image/products/drifit-4.PNG", "/image/products/drifit-5.PNG"],
     requiresSize: true 
   },
   { 
@@ -37,7 +37,7 @@ const PRODUCTS = [
     id: "4", 
     name: "כובע טקטי", 
     price: 40, 
-    images: ["/image/products/hat-1.PNG", "/image/products/hat-2.PNG", "/image/products/hat-3.PNG", "/image/products/hat-4.JPG"],
+    images: ["/image/products/hat-1.PNG", "/image/products/hat-2.PNG", "/image/products/hat-3.PNG", "/image/products/hat-4.PNG"],
     requiresSize: false 
   },
   { 
