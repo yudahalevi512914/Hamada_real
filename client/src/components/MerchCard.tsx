@@ -30,22 +30,52 @@ export function MerchCard({ product, addToCart }: any) {
       className="group relative bg-zinc-900/50 backdrop-blur-sm rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all duration-500 shadow-2xl"
     >
       {/* אזור התמונה המעוצב */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-zinc-800/20">
-        
-        {/* אינדיקטורים בסגנון סטורי (למעלה) */}
-        {hasMultiple && (
-          <div className="absolute top-4 inset-x-4 z-20 flex gap-1.5">
-            {images.map((_: any, i: number) => (
-              <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: i === currentIndex ? "100%" : i < currentIndex ? "100%" : "0%" }}
-                  transition={{ duration: i === currentIndex ? 4 : 0.3, ease: "linear" }}
-                  className="h-full bg-primary"
-                />
-              </div>
-            ))}
-          </div>
+   <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900 flex items-center justify-center p-4">
+  {/* אינדיקטורים בסגנון סטורי */}
+  {hasMultiple && (
+    <div className="absolute top-4 inset-x-4 z-30 flex gap-1.5">
+      {images.map((_: any, i: number) => (
+        <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: i === currentIndex ? "100%" : i < currentIndex ? "100%" : "0%" }}
+            transition={{ 
+              duration: i === currentIndex ? 4 : 0.4, 
+              ease: i === currentIndex ? "linear" : "easeInOut" 
+            }}
+            className="h-full bg-primary shadow-[0_0_8px_rgba(234,179,8,0.6)]"
+          />
+        </div>
+      ))}
+    </div>
+  )}
+
+  {/* תמונות עם אפקט Cross-fade חלק */}
+  <div className="relative w-full h-full">
+    <AnimatePresence mode="popLayout">
+      <motion.img
+        key={currentIndex}
+        src={images[currentIndex]}
+        alt={product.name}
+        // האנימציה המעודכנת:
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 1.02 }}
+        transition={{ 
+          duration: 0.9, 
+          ease: [0.4, 0, 0.2, 1] // קצב תנועה מקצועי (Cubic Bezier)
+        }}
+        className="absolute inset-0 w-full h-full object-contain"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = "https://placehold.co/400x500?text=Image+Missing";
+        }}
+      />
+    </AnimatePresence>
+  </div>
+
+  {/* הצללה עדינה בתחתית */}
+  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/40 via-transparent to-transparent pointer-events-none" />
+</div>
         )}
 
         {/* תמונות עם מעבר חלק (AnimatePresence) */}
