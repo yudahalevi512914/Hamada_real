@@ -263,22 +263,23 @@ export default function Home() {
       </section>
 
 
-      {/* MERCH STORE */}
-      <section id="store" className="py-24 relative">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <h2 className="font-display text-4xl md:text-5xl font-black mb-4">חנות הפלוגה</h2>
-          <div className="w-24 h-2 bg-primary mx-auto rounded-full mb-12" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-right">
-            {PRODUCTS.map(product => (
-              <MerchCard 
-                key={product.id}
-                {...product}
-                onAdd={() => addToCart(product)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+{/* MERCH STORE */}
+<section id="store" className="py-24 relative">
+  <div className="container mx-auto px-4 md:px-6 text-center">
+    <h2 className="font-display text-4xl md:text-5xl font-black mb-4">חנות הפלוגה</h2>
+    <div className="w-24 h-2 bg-primary mx-auto rounded-full mb-12" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-right">
+      {PRODUCTS.map(product => (
+        <MerchCard 
+          key={product.id}
+          product={product} // <-- מעבירים את כל האובייקט תחת השם product
+          addToCart={addToCart} // <-- מעבירים את הפונקציה עצמה
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
 
       {/* FOOTER */}
       <footer className="bg-zinc-950 text-zinc-400 py-12 border-t border-zinc-900">
