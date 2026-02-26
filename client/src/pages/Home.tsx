@@ -16,7 +16,7 @@ const PRODUCTS = [
     id: "1", 
     name: "קפוצ'ון מוהנדוס", 
     price: 120, 
-    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
+    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-1.PNG"],
     requiresSize: true 
   },
   { 
@@ -30,7 +30,7 @@ const PRODUCTS = [
     id: "3", 
     name: "פסל בהיכל", 
     price: 60, 
-    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-1.PNG"],
+    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-2.PNG","/image/products/drifit-3.PNG", "/image/products/drifit-4.PNG", "/image/products/drifit-5.PNG"],
     requiresSize: true 
   },
   { 
