@@ -3,19 +3,32 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 
-export function MerchCard({ product, addToCart }: any) {
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  images: string[];
+  requiresSize?: boolean;
+}
+
+interface MerchCardProps {
+  product: Product;
+  addToCart: (product: Product) => void;
+}
+
+export function MerchCard({ product, addToCart }: MerchCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // הגנה ובדיקת תמונות
   const images = product?.images || [];
   const hasMultiple = images.length > 1;
 
-  // החלפה אוטומטית (Auto-play)
+  // החלפה אוטומטית (Auto-play) כל 4 שניות
   useEffect(() => {
     if (!hasMultiple) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 4000); // מחליף תמונה כל 4 שניות
+    }, 4000);
     return () => clearInterval(timer);
   }, [hasMultiple, images.length]);
 
@@ -26,101 +39,85 @@ export function MerchCard({ product, addToCart }: any) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      whileHover={{ y: -5 }}
-      className="group relative bg-zinc-900/50 backdrop-blur-sm rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/50 transition-all duration-500 shadow-2xl"
+      whileHover={{ y: -8 }}
+      className="group relative bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-primary/40 transition-all duration-500 shadow-2xl"
     >
-      {/* אזור התמונה המעוצב */}
-   <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900 flex items-center justify-center p-4">
-  {/* אינדיקטורים בסגנון סטורי */}
-  {hasMultiple && (
-    <div className="absolute top-4 inset-x-4 z-30 flex gap-1.5">
-      {images.map((_: any, i: number) => (
-        <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: i === currentIndex ? "100%" : i < currentIndex ? "100%" : "0%" }}
-            transition={{ 
-              duration: i === currentIndex ? 4 : 0.4, 
-              ease: i === currentIndex ? "linear" : "easeInOut" 
-            }}
-            className="h-full bg-primary shadow-[0_0_8px_rgba(234,179,8,0.6)]"
-          />
-        </div>
-      ))}
-    </div>
-  )}
-
-  {/* תמונות עם אפקט Cross-fade חלק */}
-  <div className="relative w-full h-full">
-    <AnimatePresence mode="popLayout">
-      <motion.img
-        key={currentIndex}
-        src={images[currentIndex]}
-        alt={product.name}
-        // האנימציה המעודכנת:
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 1.02 }}
-        transition={{ 
-          duration: 0.9, 
-          ease: [0.4, 0, 0.2, 1] // קצב תנועה מקצועי (Cubic Bezier)
-        }}
-        className="absolute inset-0 w-full h-full object-contain"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = "https://placehold.co/400x500?text=Image+Missing";
-        }}
-      />
-    </AnimatePresence>
-  </div>
-
-  {/* הצללה עדינה בתחתית */}
-  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/40 via-transparent to-transparent pointer-events-none" />
-</div>
+      {/* אזור התמונה - יחס 4:5 נותן מראה של קטלוג אופנה */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-zinc-950 flex items-center justify-center">
+        
+        {/* אינדיקטורים דקים בסגנון אינסטגרם סטורי */}
+        {hasMultiple && (
+          <div className="absolute top-5 inset-x-6 z-30 flex gap-1.5">
+            {images.map((_, i) => (
+              <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: i === currentIndex ? "100%" : i < currentIndex ? "100%" : "0%" }}
+                  transition={{ 
+                    duration: i === currentIndex ? 4 : 0.4, 
+                    ease: i === currentIndex ? "linear" : "easeInOut" 
+                  }}
+                  className="h-full bg-primary shadow-[0_0_10px_rgba(234,179,8,0.5)]"
+                />
+              </div>
+            ))}
+          </div>
         )}
 
-        {/* תמונות עם מעבר חלק (AnimatePresence) */}
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={currentIndex}
-            src={images[currentIndex]}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-            className="w-full h-full object-contain p-4"
-          />
-        </AnimatePresence>
-
-        {/* שכבת הצללה בתחתית התמונה */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60" />
-      </div>
-
-      {/* פרטי המוצר */}
-      <div className="p-6 text-right" dir="rtl">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-            {product.name}
-          </h3>
-          <span className="text-primary font-black text-xl italic">
-            ₪{product.price}
-          </span>
+        {/* תמונות עם אפקט Cross-fade חלק (ללא קפיצות) */}
+        <div className="relative w-full h-full p-6">
+          <AnimatePresence mode="popLayout">
+            <motion.img
+              key={currentIndex}
+              src={images[currentIndex]}
+              alt={product.name}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.04 }}
+              transition={{ 
+                duration: 0.8, 
+                ease: [0.4, 0, 0.2, 1] 
+              }}
+              className="absolute inset-0 w-full h-full object-contain p-8"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://placehold.co/400x500?text=Image+Not+Found";
+              }}
+            />
+          </AnimatePresence>
         </div>
 
-        <p className="text-zinc-500 text-sm mb-6 line-clamp-1 italic">
-          מהדורת אוגוסט 25' | פלוגה 603
+        {/* שכבת הצללה דקורטיבית בתחתית */}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent pointer-events-none" />
+      </div>
+
+      {/* פרטי המוצר המעוצבים */}
+      <div className="p-7 text-right" dir="rtl">
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors duration-300">
+            {product.name}
+          </h3>
+          <div className="flex flex-col items-end">
+            <span className="text-primary font-black text-2xl tracking-tighter italic">
+              ₪{product.price}
+            </span>
+          </div>
+        </div>
+
+        <p className="text-zinc-500 text-sm mb-6 font-medium tracking-wide">
+          מהדורת לוחמים | <span className="text-zinc-400">פלוגה 603</span>
         </p>
 
         <Button 
           onClick={() => addToCart(product)}
-          className="w-full bg-white text-black hover:bg-primary hover:text-black font-black py-6 rounded-2xl transition-all duration-300 flex gap-2 group/btn"
+          className="w-full bg-white text-black hover:bg-primary hover:text-black font-black py-7 rounded-2xl transition-all duration-300 flex gap-3 group/btn shadow-xl active:scale-95"
         >
-          <ShoppingCart className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+          <ShoppingCart className="w-5 h-5 group-hover/btn:rotate-12 transition-transform" />
           הוספה לסל
         </Button>
       </div>
 
-      {/* אפקט תאורה בפינה (Glow) */}
-      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 blur-[50px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      {/* אפקט Glow בפינה שמופיע ב-Hover */}
+      <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-primary/10 blur-[60px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
     </motion.div>
   );
 }
