@@ -16,7 +16,7 @@ const PRODUCTS = [
     id: "1", 
     name: "קפוצ'ון פלוגתי", 
     price: 120, 
-    images: ["/image/products/cap-1.jpg","/image/products/cap-1.jpg"],
+    images: ["/image/products/cap-1.JPG","/image/products/cap-1.JPG"],
     requiresSize: true 
   },
   { 
@@ -37,7 +37,7 @@ const PRODUCTS = [
     id: "4", 
     name: "כובע טקטי", 
     price: 40, 
-    images: ["/image/products/hat-1.PNG", "/image/products/hat-2.PNG", "/image/products/hat-3.PNG", "/image/products/hat-4.jpg"],
+    images: ["/image/products/hat-1.PNG", "/image/products/hat-2.PNG", "/image/products/hat-3.PNG", "/image/products/hat-4.JPG"],
     requiresSize: false 
   },
   { 
