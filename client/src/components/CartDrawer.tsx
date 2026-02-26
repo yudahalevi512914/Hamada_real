@@ -1,19 +1,35 @@
 import { useState } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
+import { useForm } from "react-hook-form";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetHeader, 
+  SheetTitle, 
+  SheetFooter 
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShoppingBag, Trash2, Plus, Minus, CheckCircle2, ExternalLink, Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ShoppingCart, 
+  Trash2, 
+  Plus, 
+  Minus, 
+  Send, 
+  CheckCircle2,
+  Loader2
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-export type CartItem = {
+export interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
   size?: string;
-};
+  images: string[];
+}
 
 interface CartDrawerProps {
   items: CartItem[];
@@ -24,158 +40,178 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ items, updateQuantity, updateSize, removeItem, clearCart }: CartDrawerProps) {
-  const [step, setStep] = useState<'cart' | 'details' | 'summary'>('cart');
+  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', note: '' });
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { toast } = useToast();
+  const { register, handleSubmit, reset } = useForm();
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // הקישורים שלך
-  const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxikxVE3D_5q7x2lOOFqzNMEOfvMcRiI_-n2F-2Luc9f8Ja9941RAM0IrYVSiHmDAqY/exec";
-  const PAYBOX_LINK = "https://payboxapp.page.link/YOUR_LINK"; // תחליף בקישור הפייבוקס שלכם
+  const onSubmit = async (data: any) => {
+    setIsSubmitting(true);
+    try {
+      // כאן מדביקים את הקישור ל-Google Apps Script שיצרת
+      const GOOGLE_SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
 
-  const handleCheckout = async () => {
-    if (step === 'cart') {
-      setStep('details');
-    } else if (step === 'details') {
-      setIsSubmitting(true);
-      
       const orderData = {
-        name: customerInfo.name,
-        phone: customerInfo.phone,
-        note: customerInfo.note,
-        items: items.map(i => `${i.name}${i.size ? ` (${i.size})` : ''} x${i.quantity}`).join(", "),
-        total: total
+        ...data,
+        items: items.map(item => `${item.name} (כמות: ${item.quantity}${item.size ? `, מידה: ${item.size}` : ""})`).join(", "),
+        totalPrice: total,
+        date: new Date().toLocaleString("he-IL"),
       };
 
-      try {
-        // שליחה ל-Google Sheets
-        await fetch(GOOGLE_SHEET_URL, {
-          method: "POST",
-          mode: "no-cors", // חשוב למניעת שגיאות CORS
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderData)
-        });
-        
-        setStep('summary');
-        clearCart(); 
-      } catch (error) {
-        console.error("שגיאה בשמירת ההזמנה:", error);
-        // מעבירים לסיום בכל מקרה כדי שהמשתמש יוכל לשלם
-        setStep('summary');
-      } finally {
-        setIsSubmitting(false);
-      }
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+        setIsOpen(false);
+        clearCart();
+        reset();
+      }, 3000);
+    } catch (error) {
+      toast({
+        title: "שגיאה בשליחה",
+        description: "לא הצלחנו לשלוח את ההזמנה, נסה שוב מאוחר יותר.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <Sheet onOpenChange={(open) => { if(!open) setStep('cart'); }}>
-      <SheetContent className="w-full sm:max-w-md bg-zinc-950 border-zinc-800 text-white flex flex-col p-0" dir="rtl">
-        <SheetHeader className="p-6 border-b border-zinc-900">
-          <SheetTitle className="text-white flex items-center gap-2 font-bold text-xl">
-            <ShoppingBag className="text-primary w-6 h-6" />
-            {step === 'cart' ? 'סל הקניות שלי' : step === 'details' ? 'איפה למסור?' : 'ההזמנה בדרך!'}
-          </SheetTitle>
-        </SheetHeader>
+    <>
+      {/* כפתור עגלה צף (Floating Action Button) */}
+      <AnimatePresence>
+        {items.length > 0 && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0, opacity: 0, y: 20 }}
+            className="fixed bottom-8 left-8 z-50"
+          >
+            <Button
+              onClick={() => setIsOpen(true)}
+              className="h-16 w-16 rounded-full bg-primary hover:bg-yellow-500 text-black shadow-[0_0_30px_rgba(234,179,8,0.4)] border-4 border-zinc-950 flex items-center justify-center relative group transition-all duration-300"
+            >
+              <ShoppingCart className="w-7 h-7 group-hover:scale-110 transition-transform" />
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold h-6 w-6 rounded-full flex items-center justify-center border-2 border-zinc-950">
+                {items.reduce((acc, item) => acc + item.quantity, 0)}
+              </span>
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="flex-1 overflow-hidden">
-          <AnimatePresence mode="wait">
-            {step === 'cart' ? (
-              <motion.div key="cart" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="h-full flex flex-col">
-                <ScrollArea className="flex-1 p-6">
-                  {items.length === 0 ? (
-                    <div className="text-center py-24 text-zinc-500 font-medium">הסל שלך מחכה שתמלא אותו...</div>
-                  ) : (
-                    <div className="space-y-4">
-                      {items.map((item) => (
-                        <div key={item.id} className="flex gap-4 bg-zinc-900/40 p-4 rounded-2xl border border-zinc-800/50 items-center transition-all hover:bg-zinc-900/60">
-                          <div className="flex-1 text-right">
-                            <h4 className="font-bold text-lg">{item.name}</h4>
-                            {item.size && <p className="text-zinc-500 text-sm">מידה: {item.size}</p>}
-                            <p className="text-primary font-bold mt-1">₪{item.price * item.quantity}</p>
-                            <div className="flex items-center gap-4 mt-4">
-                              <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-zinc-700 bg-zinc-800" onClick={() => updateQuantity(item.id, -1)}><Minus className="w-3 h-3" /></Button>
-                              <span className="font-bold text-lg">{item.quantity}</span>
-                              <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-zinc-700 bg-zinc-800" onClick={() => updateQuantity(item.id, 1)}><Plus className="w-3 h-3" /></Button>
-                            </div>
-                          </div>
-                          <Button size="icon" variant="ghost" className="text-zinc-600 hover:text-red-500 hover:bg-red-500/10" onClick={() => removeItem(item.id)}><Trash2 className="w-5 h-5" /></Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </ScrollArea>
-              </motion.div>
-            ) : step === 'details' ? (
-              <motion.div key="details" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="p-6 space-y-6">
-                <div className="space-y-5">
-                  <div className="space-y-2 text-right">
-                    <Label className="text-zinc-400 text-sm mr-1">שם מלא</Label>
-                    <Input className="bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus:ring-primary text-right text-lg" placeholder="מי מזמין?" value={customerInfo.name} onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})} />
-                  </div>
-                  <div className="space-y-2 text-right">
-                    <Label className="text-zinc-400 text-sm mr-1">מספר טלפון</Label>
-                    <Input className="bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus:ring-primary text-right text-lg" placeholder="בשביל לתאם מסירה" type="tel" value={customerInfo.phone} onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})} />
-                  </div>
-                  <div className="space-y-2 text-right">
-                    <Label className="text-zinc-400 text-sm mr-1">מחלקה / הערות</Label>
-                    <Input className="bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus:ring-primary text-right text-lg" placeholder="איפה אתם בבסיס?" value={customerInfo.note} onChange={(e) => setCustomerInfo({...customerInfo, note: e.target.value})} />
-                  </div>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div key="summary" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-6 text-center space-y-8 py-12">
-                <div className="relative inline-block">
-                  <CheckCircle2 className="w-24 h-24 text-primary mx-auto" />
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1.5, opacity: 0 }} transition={{ duration: 1, repeat: Infinity }} className="absolute inset-0 bg-primary/20 rounded-full" />
-                </div>
-                <div className="space-y-3">
-                  <h2 className="text-4xl font-black italic tracking-tighter">קיבלנו!</h2>
-                  <p className="text-zinc-400 text-lg">פרטי ההזמנה הועברו לרישום הפלוגתי</p>
-                </div>
-                
-                <div className="bg-zinc-900/80 p-6 rounded-[2rem] border border-zinc-800 shadow-xl">
-                  <p className="text-zinc-500 text-sm font-bold mb-1">סה"כ לתשלום:</p>
-                  <p className="text-5xl font-black text-primary italic">₪{total}</p>
-                </div>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent className="w-full sm:max-w-md bg-zinc-950 border-zinc-800 text-right p-0 flex flex-col" dir="rtl">
+          <SheetHeader className="p-6 border-b border-zinc-800">
+            <SheetTitle className="text-2xl font-black text-white flex items-center gap-2 justify-start">
+              <ShoppingCart className="text-primary" />
+              סל הקניות שלי
+            </SheetTitle>
+          </SheetHeader>
 
-                <div className="space-y-4 pt-4">
-                  <p className="text-zinc-300 font-medium">כדי שנשלח את ההזמנה, יש להעביר תשלום בקבוצת הפייבוקס:</p>
-                  <Button className="w-full h-18 text-xl font-black gap-3 rounded-[1.5rem] shadow-[0_10px_30px_rgba(234,179,8,0.2)] hover:scale-105 transition-transform" asChild>
-                    <a href={PAYBOX_LINK} target="_blank" rel="noopener noreferrer">
-                      מעבר לתשלום בפייבוקס
-                      <ExternalLink className="w-6 h-6" />
-                    </a>
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <SheetFooter className="p-6 border-t border-zinc-900 bg-black/40 backdrop-blur-lg">
-          {step !== 'summary' && (
-            <div className="w-full space-y-4">
-              <div className="flex justify-between items-center px-2">
-                <span className="text-zinc-400 text-lg font-bold">סיכום ביניים:</span>
-                <span className="text-3xl font-black text-primary italic">₪{total}</span>
-              </div>
-              <Button 
-                disabled={items.length === 0 || isSubmitting || (step === 'details' && (!customerInfo.name || !customerInfo.phone))}
-                onClick={handleCheckout} 
-                className="w-full h-16 text-xl font-black rounded-2xl transition-all active:scale-95 shadow-lg"
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {isSuccess ? (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }} 
+                animate={{ opacity: 1, scale: 1 }}
+                className="h-full flex flex-col items-center justify-center text-center space-y-4"
               >
-                {isSubmitting ? (
-                  <Loader2 className="w-7 h-7 animate-spin" />
-                ) : (
-                  step === 'cart' ? 'המשך לפרטי משלוח' : 'שלח הזמנה'
-                )}
+                <CheckCircle2 className="w-20 h-20 text-green-500" />
+                <h3 className="text-2xl font-bold text-white">ההזמנה נשלחה!</h3>
+                <p className="text-zinc-400">הפרטים הועברו למנהל הפלוגה.</p>
+              </motion.div>
+            ) : items.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-zinc-500">
+                <ShoppingCart className="w-12 h-12 mb-4 opacity-20" />
+                <p>הסל שלך ריק כרגע</p>
+              </div>
+            ) : (
+              items.map((item) => (
+                <div key={item.id} className="flex gap-4 bg-zinc-900/50 p-4 rounded-2xl border border-white/5 relative group">
+                  <div className="h-20 w-20 bg-zinc-800 rounded-xl overflow-hidden shrink-0">
+                    <img src={item.images[0]} className="w-full h-full object-contain" />
+                  </div>
+                  
+                  <div className="flex-1 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-bold text-white text-lg">{item.name}</h4>
+                      <button onClick={() => removeItem(item.id)} className="text-zinc-500 hover:text-red-500 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center bg-zinc-800 rounded-lg p-1">
+                        <button onClick={() => updateQuantity(item.id, 1)} className="p-1 text-primary"><Plus className="w-4 h-4" /></button>
+                        <span className="px-3 text-white font-mono">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, -1)} className="p-1 text-zinc-400"><Minus className="w-4 h-4" /></button>
+                      </div>
+                      <span className="text-primary font-bold">₪{item.price * item.quantity}</span>
+                    </div>
+
+                    {item.size !== undefined && (
+                      <div className="flex gap-2 pt-1">
+                        {["S", "M", "L", "XL"].map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => updateSize(item.id, s)}
+                            className={`px-2 py-1 text-xs rounded-md border transition-all ${
+                              item.size === s ? "bg-primary text-black border-primary" : "border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {!isSuccess && items.length > 0 && (
+            <div className="p-6 bg-zinc-900/80 border-t border-zinc-800 space-y-6">
+              <form id="order-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-zinc-400">שם מלא</Label>
+                    <Input {...register("fullName", { required: true })} className="bg-zinc-800 border-zinc-700 text-white" placeholder="ישראל ישראלי" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-zinc-400">טלפון</Label>
+                    <Input {...register("phone", { required: true })} className="bg-zinc-800 border-zinc-700 text-white font-mono" placeholder="050-0000000" />
+                  </div>
+                </div>
+              </form>
+              
+              <div className="flex justify-between items-center text-xl font-black text-white">
+                <span>סה"כ לתשלום:</span>
+                <span className="text-primary italic">₪{total}</span>
+              </div>
+
+              <Button 
+                disabled={isSubmitting}
+                form="order-form"
+                className="w-full bg-primary hover:bg-yellow-500 text-black font-black py-7 rounded-2xl text-lg flex gap-3 shadow-[0_10px_20px_rgba(234,179,8,0.2)]"
+              >
+                {isSubmitting ? <Loader2 className="animate-spin" /> : <Send className="w-5 h-5" />}
+                שליחת הזמנה למנהל
               </Button>
             </div>
           )}
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }
