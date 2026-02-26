@@ -1,63 +1,77 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Expand } from "lucide-react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 
-interface MerchCardProps {
-  name: string;
-  price: number;
-  images: string[];
-  onAdd: () => void;
-}
+// בתוך הפונקציה MerchCard:
+export function MerchCard({ product, addToCart }) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-export function MerchCard({ name, price, images, onAdd }: MerchCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // מונע מהקליק לפתוח את המוצר בטעות
+    setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+  };
 
   return (
-    <motion.div
-      whileHover={{ y: -10 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="h-full"
-    >
-      <Card className="overflow-hidden border-zinc-800 bg-zinc-900/50 group h-full flex flex-col">
-        {/* תצוגת תמונה עם אפקט החלפה */}
-        <div className="relative aspect-square overflow-hidden bg-zinc-800">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={isHovered && images[1] ? images[1] : images[0]}
-              src={isHovered && images[1] ? images[1] : images[0]}
-              alt={name}
-              initial={{ opacity: 0.5 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0.5 }}
-              transition={{ duration: 0.4 }}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-          </AnimatePresence>
-          
-          {/* Badge מחיר מעוצב */}
-          <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-md text-primary font-bold px-3 py-1 rounded-lg border border-primary/20">
-            ₪{price}
-          </div>
+    <div className="group bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 flex flex-col h-full">
+      {/* אזור התמונה */}
+      <div className="relative aspect-square bg-zinc-800 overflow-hidden">
+        <img
+          src={product.images[currentImageIndex]}
+          alt={product.name}
+          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+        />
+        
+        {/* חצים להחלפת תמונה - מופיעים רק אם יש יותר מתמונה אחת */}
+        {product.images.length > 1 && (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full h-8 w-8"
+              onClick={nextImage}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full h-8 w-8"
+              onClick={prevImage}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            
+            {/* נקודות אינדיקציה בתחתית התמונה */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              {product.images.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-1.5 w-1.5 rounded-full ${i === currentImageIndex ? 'bg-primary' : 'bg-white/30'}`} 
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* פרטי המוצר */}
+      <div className="p-5 flex flex-col flex-1 justify-between text-right" dir="rtl">
+        <div>
+          <h3 className="text-xl font-bold text-white mb-1">{product.name}</h3>
+          <p className="text-primary font-mono font-bold text-lg">₪{product.price}</p>
         </div>
-
-        <CardContent className="p-6 flex-grow text-right">
-          <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
-          <p className="text-zinc-500 text-sm">איכות פרימיום ללוחמי 603</p>
-        </CardContent>
-
-        <CardFooter className="p-6 pt-0">
-          <Button 
-            onClick={onAdd}
-            className="w-full gap-2 bg-primary hover:bg-primary/90 text-black font-bold h-12 rounded-xl"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            הוספה לסל
-          </Button>
-        </CardFooter>
-      </Card>
-    </motion.div>
+        <Button 
+          onClick={() => addToCart(product)}
+          className="w-full mt-4 bg-primary hover:bg-yellow-500 text-black font-bold rounded-xl"
+        >
+          הוספה לסל
+        </Button>
+      </div>
+    </div>
   );
 }
