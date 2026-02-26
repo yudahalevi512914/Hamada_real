@@ -37,14 +37,14 @@ const PRODUCTS = [
     id: "4", 
     name: "כובע טקטי", 
     price: 40, 
-    images: ["/image/products/hat-1.jpg", "/image/products/hat-2.jpg", "/image/products/hat-3.jpg", "/image/products/hat-4.jpg"],
+    images: ["/image/products/hat-1.png", "/image/products/hat-2.png", "/image/products/hat-3.png", "/image/products/hat-4.png"],
     requiresSize: false 
   },
   { 
     id: "5", 
     name: "פאצ' פלוגתי", 
     price: 20, 
-    images: ["/image/products/patch-1.jpg", "/image/products/patch-2.jpg"],
+    images: ["/image/products/patch-1.png", "/image/products/patch-2.png"],
     requiresSize: false 
   },
 ];
