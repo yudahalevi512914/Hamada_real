@@ -16,7 +16,7 @@ const PRODUCTS = [
     id: "1", 
     name: "קפוצ'ון פלוגתי", 
     price: 120, 
-    images: ["/image/products/cap-1.jpg"],
+    images: ["/image/products/cap-1.jpg","/image/products/cap-1.jpg"],
     requiresSize: true 
   },
   { 
