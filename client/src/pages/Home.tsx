@@ -23,21 +23,21 @@ const PRODUCTS = [
     id: "2", 
     name: "בהל\"צ שישי בצהריים", 
     price: 50, 
-    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
+    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-1.PNG"],
     requiresSize: true 
   },
   { 
     id: "3", 
     name: "פסל בהיכל", 
     price: 60, 
-    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
+    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-1.PNG"],
     requiresSize: true 
   },
   { 
     id: "6", 
     name: "חולצת מוהנדוס", 
     price: 60, 
-    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
+    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-1.PNG"],
     requiresSize: true 
   },
   { 
