@@ -14,35 +14,42 @@ import logo2 from "@assets/IMG_6515_1771755047663.webp";
 const PRODUCTS = [
   { 
     id: "1", 
-    name: "קפוצ'ון פלוגתי", 
+    name: "קפוצ'ון מוהנדוס", 
     price: 120, 
-    images: ["/image/products/cap-1.png","/image/products/cap-1.png"],
+    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
     requiresSize: true 
   },
   { 
     id: "2", 
-    name: "חולצת דרייפיט", 
+    name: "בהל\"צ שישי בצהריים", 
     price: 50, 
-    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-2.PNG", "/image/products/drifit-3.PNG", "/image/products/drifit-4.PNG", "/image/products/drifit-5.PNG"],
+    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
     requiresSize: true 
   },
   { 
     id: "3", 
-    name: "חולצת דרייפיט", 
+    name: "פסל בהיכל", 
+    price: 60, 
+    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
+    requiresSize: true 
+  },
+  { 
+    id: "6", 
+    name: "חולצת מוהנדוס", 
     price: 60, 
     images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
     requiresSize: true 
   },
   { 
     id: "4", 
-    name: "כובע טקטי", 
+    name: "כובע בייניש", 
     price: 40, 
     images: ["/image/products/hat-1.PNG", "/image/products/hat-2.PNG", "/image/products/hat-3.PNG", "/image/products/hat-4.PNG"],
     requiresSize: false 
   },
   { 
     id: "5", 
-    name: "פאצ' פלוגתי", 
+    name: "פאטצ' בייניש", 
     price: 20, 
     images: ["/image/products/patch-1.PNG", "/image/products/patch-2.PNG"],
     requiresSize: false 
@@ -62,11 +69,16 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  const addToCart = (product: typeof PRODUCTS[0]) => {
+  const addToCart = (product: any) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      // אם המוצר דורש מידה, אנחנו בודקים התאמה גם לפי ID וגם לפי מידה
+      const existing = prev.find(item => item.id === product.id && item.size === product.size);
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+        return prev.map(item => 
+          (item.id === product.id && item.size === product.size) 
+            ? { ...item, quantity: item.quantity + 1 } 
+            : item
+        );
       }
       return [...prev, { ...product, quantity: 1 }];
     });
@@ -146,14 +158,14 @@ export default function Home() {
               <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
             </div>
             
-            <div className="bg-card rounded-3xl p-8 md:p-12 shadow-xl border border-border/50 relative overflow-hidden">
+            <div className="bg-[#18181b] rounded-3xl p-8 md:p-12 shadow-xl border border-border/50 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full" />
               <div className="flex flex-col md:flex-row gap-8 items-center relative z-10 text-right">
                 <div className="w-48 h-48 shrink-0 rounded-2xl overflow-hidden shadow-lg border-2 border-border">
                   <img src={logo2} alt="סמל פלוגה" className="w-full h-full object-cover" />
                 </div>
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-bold flex items-center gap-2 justify-start">
+                  <h3 className="text-2xl font-bold flex items-center gap-2 justify-start text-white">
                     <Users className="text-primary w-6 h-6" />
                     מורשת וגאווה
                   </h3>
@@ -200,9 +212,9 @@ export default function Home() {
           </div>
         </div>
       </section>
-       {/* SONGS SECTION - UPDATED DESIGN */}
+
+      {/* SONGS SECTION */}
       <section id="songs" className="py-24 bg-[#09090b] relative overflow-hidden">
-        {/* אפקט תאורה אחורי חזק יותר להפרדה */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -220,7 +232,6 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* וידאו עם אפקט Hover */}
           <div className="max-w-4xl mx-auto mb-16 px-2">
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/5 bg-zinc-900 group">
               <iframe 
@@ -235,7 +246,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* כפתור "זכוכית" משופר */}
           <div className="flex justify-center pb-8">
             <Link href="/songs">
               <motion.button
@@ -243,18 +253,13 @@ export default function Home() {
                 whileTap={{ scale: 0.95 }}
                 className="group relative flex items-center gap-5 px-8 py-5 bg-zinc-900/80 backdrop-blur-xl border border-primary/40 rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:border-primary transition-all duration-300"
               >
-                {/* Glow effect on hover */}
                 <div className="absolute inset-0 rounded-2xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                
                 <div className="relative z-10 bg-primary/20 p-3 rounded-xl">
                   <Music className="w-6 h-6 text-primary" />
                 </div>
-                
                 <div className="relative z-10 text-right">
-                  <span className="block text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-1"></span>
                   <span className="block text-xl font-bold tracking-tight">כל השירים</span>
                 </div>
-
                 <ChevronLeft className="relative z-10 w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </motion.button>
             </Link>
@@ -263,23 +268,22 @@ export default function Home() {
       </section>
 
 
-{/* MERCH STORE */}
-<section id="store" className="py-24 relative">
-  <div className="container mx-auto px-4 md:px-6 text-center">
-    <h2 className="font-display text-4xl md:text-5xl font-black mb-4">חנות הפלוגה</h2>
-    <div className="w-24 h-2 bg-primary mx-auto rounded-full mb-12" />
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-right">
-      {PRODUCTS.map(product => (
-        <MerchCard 
-          key={product.id}
-          product={product} // <-- מעבירים את כל האובייקט תחת השם product
-          addToCart={addToCart} // <-- מעבירים את הפונקציה עצמה
-        />
-      ))}
-    </div>
-  </div>
-</section>
-
+      {/* MERCH STORE */}
+      <section id="store" className="py-24 relative bg-background">
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <h2 className="font-display text-4xl md:text-5xl font-black mb-4">חנות הפלוגה</h2>
+          <div className="w-24 h-2 bg-primary mx-auto rounded-full mb-12" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 text-right">
+            {PRODUCTS.map(product => (
+              <MerchCard 
+                key={product.id}
+                product={product}
+                addToCart={addToCart}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* FOOTER */}
       <footer className="bg-zinc-950 text-zinc-400 py-12 border-t border-zinc-900">
@@ -290,14 +294,14 @@ export default function Home() {
         </div>
       </footer>
 
-    <CartDrawer 
-  items={cart} // וודא שזה cart ולא PRODUCTS
-  updateQuantity={updateQuantity}
-  updateSize={updateSize}
-  removeItem={removeItem}
-  clearCart={() => setCart([])}
-/>
-
+      {/* Global Cart Drawer */}
+      <CartDrawer 
+        items={cart}
+        updateQuantity={updateQuantity}
+        updateSize={updateSize}
+        removeItem={removeItem}
+        clearCart={() => setCart([])}
+      />
     </div>
   );
 }
