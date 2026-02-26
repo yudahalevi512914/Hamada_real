@@ -290,14 +290,14 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Global Cart Drawer */}
-      <CartDrawer 
-        items={cart}
-        updateQuantity={updateQuantity}
-        updateSize={updateSize}
-        removeItem={removeItem}
-        clearCart={() => setCart([])}
-      />
+    <CartDrawer 
+  items={cart} // וודא שזה cart ולא PRODUCTS
+  updateQuantity={updateQuantity}
+  updateSize={updateSize}
+  removeItem={removeItem}
+  clearCart={() => setCart([])}
+/>
+
     </div>
   );
 }
