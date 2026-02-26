@@ -30,7 +30,7 @@ const PRODUCTS = [
     id: "3", 
     name: "חולצת דרייפיט", 
     price: 60, 
-    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-2.jpg"],
+    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
     requiresSize: true 
   },
   { 
