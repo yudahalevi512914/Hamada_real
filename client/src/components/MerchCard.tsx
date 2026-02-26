@@ -24,7 +24,7 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
   const images = product?.images || [];
   const hasMultiple = images.length > 1;
 
-  // החלפת תמונות אוטומטית - נעצרת כשבוחרים מידה כדי לא להפריע למשתמש
+  // החלפת תמונות אוטומטית - נעצרת כשבוחרים מידה
   useEffect(() => {
     if (!hasMultiple || showSizePicker) return;
     const timer = setInterval(() => {
@@ -34,14 +34,16 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
   }, [hasMultiple, images.length, showSizePicker]);
 
   const handleAddClick = () => {
+    // אם המוצר דורש מידה ועדיין לא נבחרה מידה - פתח את התפריט
     if (product.requiresSize && !selectedSize) {
       setShowSizePicker(true);
       return;
     }
-    // שליחת המוצר עם המידה שנבחרה (אם יש)
+    
+    // שליחת המוצר עם המידה (או בלי אם לא נדרש)
     addToCart({ ...product, size: selectedSize || undefined });
     
-    // איפוס בחירה לאחר הוספה
+    // איפוס מצב לאחר הוספה
     setShowSizePicker(false);
     setSelectedSize(null);
   };
@@ -55,7 +57,7 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
       viewport={{ once: true }}
       className="group relative bg-[#18181b] rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl transition-all duration-300 h-full flex flex-col"
     >
-      {/* אזור התמונה והמידות */}
+      {/* אזור התמונה ובחירת המידה */}
       <div className="relative aspect-[4/5] bg-[#18181b] flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.img
@@ -70,14 +72,14 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
           />
         </AnimatePresence>
 
-        {/* שכבת בחירת מידה (מופיעה רק כשצריך) */}
+        {/* תפריט בחירת מידה */}
         <AnimatePresence>
           {showSizePicker && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-40 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
+              className="absolute inset-0 z-40 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
             >
               <button 
                 onClick={() => setShowSizePicker(false)}
@@ -109,13 +111,13 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
                 disabled={!selectedSize}
                 className="mt-8 w-full bg-primary text-black font-black py-6 rounded-xl disabled:opacity-50"
               >
-                אישור והוספה לסל
+                אישור והוספה
               </Button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* אינדיקטורים */}
+        {/* אינדיקטורים של תמונות */}
         {hasMultiple && !showSizePicker && (
           <div className="absolute top-5 inset-x-6 z-30 flex gap-1.5">
             {images.map((_, i) => (
@@ -132,7 +134,7 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
         )}
       </div>
 
-      {/* פרטי מוצר */}
+      {/* פרטי המוצר וכפתור הפעולה */}
       <div className="p-7 text-right bg-[#18181b] flex-1 flex flex-col justify-between" dir="rtl">
         <div>
           <div className="flex justify-between items-start mb-3">
@@ -146,8 +148,9 @@ export function MerchCard({ product, addToCart }: MerchCardProps) {
           onClick={handleAddClick}
           className="w-full bg-white text-black hover:bg-primary hover:text-black font-black py-7 rounded-2xl transition-all duration-300 flex gap-3 shadow-xl active:scale-95"
         >
+          {/* הכפתור תמיד מציג הוספה לסל, אלא אם כבר נבחרה מידה והוא מוכן להוספה סופית */}
           {selectedSize ? <Check className="w-5 h-5 text-green-600" /> : <ShoppingCart className="w-5 h-5" />}
-          {product.requiresSize && !selectedSize ? "בחר מידה" : "הוספה לסל"}
+          {"הוספה לסל"}
         </Button>
       </div>
     </motion.div>
