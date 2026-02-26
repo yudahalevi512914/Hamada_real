@@ -1,193 +1,158 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+iimport { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
-  ShoppingCart, 
-  Trash2, 
-  Plus, 
-  Minus, 
-  Send, 
-  CheckCircle2,
-  Loader2,
-  ArrowRight
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { ShoppingCart, Check, X } from "lucide-react";
 
-export interface CartItem {
+interface Product {
   id: string;
   name: string;
   price: number;
-  quantity: number;
-  size?: string;
   images: string[];
+  requiresSize?: boolean;
 }
 
-interface CartDrawerProps {
-  items: CartItem[];
-  updateQuantity: (id: string, delta: number) => void;
-  updateSize: (id: string, size: string) => void;
-  removeItem: (id: string) => void;
-  clearCart: () => void;
+interface MerchCardProps {
+  product: Product;
+  addToCart: (product: any) => void;
 }
 
-export function CartDrawer({ items, updateQuantity, updateSize, removeItem, clearCart }: CartDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const { toast } = useToast();
-  const { register, handleSubmit, reset } = useForm();
+export function MerchCard({ product, addToCart }: MerchCardProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showSizePicker, setShowSizePicker] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const images = product?.images || [];
+  const hasMultiple = images.length > 1;
 
-  const onSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    try {
-      const GOOGLE_SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
-      const orderData = {
-        ...data,
-        items: items.map(item => `${item.name} (כמות: ${item.quantity}${item.size ? `, מידה: ${item.size}` : ""})`).join(", "),
-        totalPrice: total,
-        date: new Date().toLocaleString("he-IL"),
-      };
+  // החלפת תמונות אוטומטית - נעצרת כשבוחרים מידה
+  useEffect(() => {
+    if (!hasMultiple || showSizePicker) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [hasMultiple, images.length, showSizePicker]);
 
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
-
-      setIsSuccess(true);
-      setTimeout(() => {
-        setIsSuccess(false);
-        setIsOpen(false);
-        clearCart();
-        reset();
-      }, 3000);
-    } catch (error) {
-      toast({
-        title: "שגיאה בשליחה",
-        description: "לא הצלחנו לשלוח את ההזמנה.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
+  const handleAddClick = () => {
+    // אם המוצר דורש מידה ועדיין לא נבחרה מידה - פתח את התפריט
+    if (product.requiresSize && !selectedSize) {
+      setShowSizePicker(true);
+      return;
     }
+    
+    // שליחת המוצר עם המידה (או בלי אם לא נדרש)
+    addToCart({ ...product, size: selectedSize || undefined });
+    
+    // איפוס מצב לאחר הוספה
+    setShowSizePicker(false);
+    setSelectedSize(null);
   };
 
+  if (!product) return null;
+
   return (
-    <>
-      <AnimatePresence>
-        {items.length > 0 && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-8 left-8 z-50"
-          >
-            <Button
-              onClick={() => setIsOpen(true)}
-              className="h-16 w-16 rounded-full bg-primary hover:bg-yellow-500 text-black shadow-2xl border-4 border-zinc-950 relative"
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="group relative bg-[#18181b] rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl transition-all duration-300 h-full flex flex-col"
+    >
+      {/* אזור התמונה ובחירת המידה */}
+      <div className="relative aspect-[4/5] bg-[#18181b] flex items-center justify-center overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={currentIndex}
+            src={images[currentIndex]}
+            alt={product.name}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full h-full object-contain p-8 z-10"
+          />
+        </AnimatePresence>
+
+        {/* תפריט בחירת מידה */}
+        <AnimatePresence>
+          {showSizePicker && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-40 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
             >
-              <ShoppingCart className="w-7 h-7" />
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold h-6 w-6 rounded-full flex items-center justify-center">
-                {items.reduce((acc, item) => acc + item.quantity, 0)}
-              </span>
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="w-full sm:max-w-md bg-zinc-950 border-zinc-800 text-right p-0 flex flex-col" dir="rtl">
-          <SheetHeader className="p-6 border-b border-zinc-800 flex flex-row items-center justify-between">
-            <SheetTitle className="text-2xl font-black text-white flex items-center gap-2">
-              <ShoppingCart className="text-primary" />
-              הסל שלי
-            </SheetTitle>
-            <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="text-zinc-500">
-              <ArrowRight className="ml-2 w-4 h-4" />
-              חזרה לחנות
-            </Button>
-          </SheetHeader>
-
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {isSuccess ? (
-              <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
-                <CheckCircle2 className="w-20 h-20 text-green-500" />
-                <h3 className="text-2xl font-bold text-white">ההזמנה נשלחה!</h3>
+              <button 
+                onClick={() => setShowSizePicker(false)}
+                className="absolute top-4 right-4 text-zinc-500 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              
+              <p className="text-white font-black text-xl mb-6 tracking-tighter">בחר מידה</p>
+              
+              <div className="grid grid-cols-2 gap-3 w-full max-w-[200px]">
+                {["S", "M", "L", "XL", "XXL"].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`py-3 rounded-xl font-bold transition-all border-2 ${
+                      selectedSize === size 
+                        ? "bg-primary border-primary text-black" 
+                        : "border-white/10 text-white hover:border-white/40"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
               </div>
-            ) : items.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-zinc-500">
-                <p>הסל שלך ריק</p>
-                <Button variant="link" onClick={() => setIsOpen(false)} className="text-primary mt-2">המשך בקניות</Button>
-              </div>
-            ) : (
-              items.map((item) => (
-                <div key={item.id} className="flex gap-4 bg-zinc-900 p-4 rounded-2xl border border-white/5">
-                  <div className="h-20 w-20 bg-zinc-800 rounded-xl overflow-hidden shrink-0">
-                    <img src={item.images[0]} className="w-full h-full object-contain" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <h4 className="font-bold text-white">{item.name}</h4>
-                      <button onClick={() => removeItem(item.id)} className="text-zinc-500"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                    {item.size && <p className="text-primary text-xs font-bold">מידה: {item.size}</p>}
-                    <div className="flex items-center gap-3 mt-2">
-                      <div className="flex items-center bg-zinc-800 rounded-lg p-1 text-white">
-                        <button onClick={() => updateQuantity(item.id, 1)} className="p-1"><Plus className="w-3 h-3" /></button>
-                        <span className="px-2 text-sm">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, -1)} className="p-1"><Minus className="w-3 h-3" /></button>
-                      </div>
-                      <span className="text-white font-bold">₪{item.price * item.quantity}</span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
 
-          {!isSuccess && items.length > 0 && (
-            <div className="p-6 bg-zinc-900 border-t border-zinc-800 space-y-4">
-              <form id="order-form" onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                <Input {...register("fullName", { required: true })} className="bg-zinc-800 border-zinc-700 text-white" placeholder="שם מלא" />
-                <Input {...register("phone", { required: true })} className="bg-zinc-800 border-zinc-700 text-white" placeholder="טלפון" />
-                
-                <div className="flex justify-between items-center py-2 text-white font-bold">
-                  <span>סה"כ:</span>
-                  <span className="text-primary text-xl">₪{total}</span>
-                </div>
-
-                <Button 
-                  disabled={isSubmitting}
-                  className="w-full bg-primary hover:bg-yellow-500 text-black font-black py-6 rounded-xl"
-                >
-                  {isSubmitting ? <Loader2 className="animate-spin" /> : "שלח הזמנה למנהל"}
-                </Button>
-                
-                <Button 
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setIsOpen(false)}
-                  className="w-full text-zinc-500 text-sm"
-                >
-                  המשך בקניות
-                </Button>
-              </form>
-            </div>
+              <Button 
+                onClick={handleAddClick}
+                disabled={!selectedSize}
+                className="mt-8 w-full bg-primary text-black font-black py-6 rounded-xl disabled:opacity-50"
+              >
+                אישור והוספה
+              </Button>
+            </motion.div>
           )}
-        </SheetContent>
-      </Sheet>
-    </>
+        </AnimatePresence>
+
+        {/* אינדיקטורים של תמונות */}
+        {hasMultiple && !showSizePicker && (
+          <div className="absolute top-5 inset-x-6 z-30 flex gap-1.5">
+            {images.map((_, i) => (
+              <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: i === currentIndex ? "100%" : i < currentIndex ? "100%" : "0%" }}
+                  transition={{ duration: i === currentIndex ? 4 : 0.4, ease: "linear" }}
+                  className="h-full bg-primary"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* פרטי המוצר וכפתור הפעולה */}
+      <div className="p-7 text-right bg-[#18181b] flex-1 flex flex-col justify-between" dir="rtl">
+        <div>
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="text-xl font-bold text-white leading-tight">{product.name}</h3>
+            <span className="text-primary font-black text-2xl italic">₪{product.price}</span>
+          </div>
+          <p className="text-zinc-500 text-sm mb-6">מהדורת לוחמים | פלוגה 603</p>
+        </div>
+
+        <Button 
+          onClick={handleAddClick}
+          className="w-full bg-white text-black hover:bg-primary hover:text-black font-black py-7 rounded-2xl transition-all duration-300 flex gap-3 shadow-xl active:scale-95"
+        >
+          {/* הכפתור תמיד מציג הוספה לסל, אלא אם כבר נבחרה מידה והוא מוכן להוספה סופית */}
+          {selectedSize ? <Check className="w-5 h-5 text-green-600" /> : <ShoppingCart className="w-5 h-5" />}
+          {"הוספה לסל"}
+        </Button>
+      </div>
+    </motion.div>
   );
 }
