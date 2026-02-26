@@ -16,35 +16,35 @@ const PRODUCTS = [
     id: "1", 
     name: "קפוצ'ון פלוגתי", 
     price: 120, 
-    images: ["/image/products/drifit-1.jpg", "/images/products/drifit-1.jpg"],
+    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
     requiresSize: true 
   },
   { 
     id: "2", 
     name: "חולצת טריקו", 
     price: 50, 
-    images: ["/image/products/drifit-1.jpg", "/images/products/drifit-1.jpg"],
+    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-1.jpg"],
     requiresSize: true 
   },
   { 
     id: "3", 
     name: "חולצת דרייפיט", 
     price: 60, 
-    images: ["/image/products/drifit-1.jpg", "/images/products/drifit-2.jpg"],
+    images: ["/image/products/drifit-1.jpg", "/image/products/drifit-2.jpg"],
     requiresSize: true 
   },
   { 
     id: "4", 
     name: "כובע טקטי", 
     price: 40, 
-    images: ["/image/products/hat-1.jpg", "/images/products/hat-2.jpg", "/images/products/hat-3.jpg", "/images/products/hat-4.jpg"],
+    images: ["/image/products/hat-1.jpg", "/image/products/hat-2.jpg", "/image/products/hat-3.jpg", "/image/products/hat-4.jpg"],
     requiresSize: false 
   },
   { 
     id: "5", 
     name: "פאצ' פלוגתי", 
     price: 20, 
-    images: ["/image/products/patch-1.jpg", "/images/products/patch-2.jpg"],
+    images: ["/image/products/patch-1.jpg", "/image/products/patch-2.jpg"],
     requiresSize: false 
   },
 ];
