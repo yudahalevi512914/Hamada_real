@@ -23,7 +23,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
 
   // --- הגדרות תשלום ---
-  const BIT_PHONE_NUMBER = "0501234567"; // תחליף למספר הטלפון שלך לקבלת ביט
+  const BIT_PHONE_NUMBER = "0585851103"; // תחליף למספר הטלפון שלך לקבלת ביט
   const PAYBOX_LINK = "https://links.payboxapp.com/O8fomD9Ue1b"; // הקישור ששלחת לקבוצה
 
   const form = useForm<z.infer<typeof formSchema>>({
