@@ -37,7 +37,7 @@ const PRODUCTS = [
     id: "6", 
     name: "חולצת מוהנדוס", 
     price: 60, 
-    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-1.PNG"],
+    images: ["/image/products/mohandes-1.PNG", "/image/products/mohandes-1.PNG"],
     requiresSize: true 
   },
   { 
