@@ -15,7 +15,7 @@ const PRODUCTS = [
   { 
     id: "1", 
     name: "קפוצ'ון מוהנדוס", 
-    price: 120, 
+    price: 90, 
     images: ["/image/products/cap-1.png", "/image/products/cap-1.png"],
     requiresSize: true 
   },
@@ -29,7 +29,7 @@ const PRODUCTS = [
   { 
     id: "3", 
     name: "פסל בהיכל", 
-    price: 80, 
+    price: 75, 
     images: ["/image/products/drifit-1.PNG", "/image/products/drifit-2.PNG","/image/products/drifit-3.PNG", "/image/products/drifit-4.PNG", "/image/products/drifit-5.PNG"],
     requiresSize: true 
   },
