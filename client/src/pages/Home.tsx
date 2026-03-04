@@ -16,7 +16,7 @@ const PRODUCTS = [
     id: "1", 
     name: "קפוצ'ון מוהנדוס", 
     price: 120, 
-    images: ["/image/products/cap-1.PNG", "/image/products/cap-1.PNG"],
+    images: ["/image/products/cap-1.png", "/image/products/cap-1.png"],
     requiresSize: true 
   },
   { 
