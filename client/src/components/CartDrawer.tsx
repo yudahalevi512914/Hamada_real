@@ -1,106 +1,69 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { useCart } from "@/hooks/use-cart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  ShoppingCart, 
-  Trash2, 
-  Plus, 
-  Minus, 
-  Send, 
-  CheckCircle2,
-  Loader2,
-  ArrowRight,
-  Truck,
-  MapPin,
-  ShieldCheck
-} from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ShoppingCart, Loader2, CreditCard, Smartphone, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  size?: string;
-  images: string[];
-}
-
-interface CartDrawerProps {
-  items: CartItem[];
-  updateQuantity: (id: string, delta: number) => void;
-  updateSize: (id: string, size: string) => void;
-  removeItem: (id: string) => void;
-  clearCart: () => void;
-}
-
-export function CartDrawer({ items, updateQuantity, updateSize, removeItem, clearCart }: CartDrawerProps) {
+export function CartDrawer() {
+  const { items, total, clearCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [shippingMethod, setShippingMethod] = useState("pickup");
   const { toast } = useToast();
-  const { register, handleSubmit, reset } = useForm();
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingCost = shippingMethod === "home" ? 35 : 0;
-  const total = subtotal + shippingCost;
+  // הגדרות תשלום
+  const PAYBOX_LINK = "https://links.payboxapp.com/O8fomD9Ue1b";
+  const BIT_PHONE = "0501234567"; // תחליף למספר שלך במידה וצריך
 
-  const onSubmit = async (data: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      phone: formData.get("phone"),
+      address: formData.get("address"),
+      items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+      total,
+      orderDate: new Date().toLocaleString('he-IL'),
+    };
+
     try {
-      // ה-Webhook שלך מ-Make
-      const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/dvo53v9qulnc370f971r8muwz8r8viye";
-
-      const orderData = {
-        date: new Date().toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" }),
-        customerName: data.fullName,
-        phone: data.phone,
-        shippingMethod: shippingMethod === "home" ? "משלוח עד הבית" : "איסוף פלוגתי",
-        address: shippingMethod === "home" 
-          ? `${data.city}, ${data.street} ${data.houseNum}` 
-          : "איסוף מהפלוגה",
-        // ריכוז המוצרים לשורה אחת שתהיה נוחה ב-Google Sheets
-        itemsSummary: items.map(item => `${item.name} [${item.size || 'No Size'}] x${item.quantity}`).join(" | "),
-        totalPrice: `₪${total}`,
-        status: "ממתין לתשלום ביט"
-      };
-
-      const response = await fetch(MAKE_WEBHOOK_URL, {
+      // שליחה ל-Webhook של Make (לפי צילום המסך שלך)
+      const response = await fetch("https://hook.us2.make.com/694i67f97m52m6k83335m6o89h2p8m9p", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error("Failed to send to Make");
-
-      setIsSuccess(true);
-      toast({
-        title: "הזמנה נשלחה!",
-        description: "הפרטים נקלטו בטבלה. נא להעביר ביט לאישור סופי.",
-      });
-
-      setTimeout(() => {
-        setIsSuccess(false);
-        setIsOpen(false);
-        clearCart();
-        reset();
-      }, 3000);
+      if (response.ok) {
+        setIsOpen(false); // סוגר את סל הקניות
+        setShowPaymentModal(true); // פותח את החלון הקופץ לתשלום
+        clearCart(); // מנקה את הסל
+      } else {
+        throw new Error();
+      }
     } catch (error) {
       toast({
-        title: "שגיאה בשליחה",
-        description: "נסה שוב או פנה למנהל.",
         variant: "destructive",
+        title: "שגיאה בשליחה",
+        description: "נסה שוב או פנה לסמל המחלקה",
       });
     } finally {
       setIsSubmitting(false);
@@ -109,136 +72,123 @@ export function CartDrawer({ items, updateQuantity, updateSize, removeItem, clea
 
   return (
     <>
-      <AnimatePresence>
-        {items.length > 0 && (
-          <motion.div 
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-8 left-8 z-50"
-          >
-            <Button
-              onClick={() => setIsOpen(true)}
-              className="h-16 w-16 rounded-full bg-primary hover:bg-yellow-500 text-black shadow-2xl border-4 border-zinc-950 relative"
-            >
-              <ShoppingCart className="w-7 h-7" />
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold h-6 w-6 rounded-full flex items-center justify-center">
-                {items.reduce((acc, item) => acc + item.quantity, 0)}
-              </span>
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="w-full sm:max-w-md bg-zinc-950 border-zinc-800 text-right p-0 flex flex-col" dir="rtl">
-          <SheetHeader className="p-6 border-b border-zinc-800 flex flex-row items-center justify-between">
-            <SheetTitle className="text-2xl font-black text-white">סל הקניות שלי</SheetTitle>
-            <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="text-zinc-500">
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon" className="relative border-primary/20 hover:bg-primary/10 transition-colors">
+            <ShoppingCart className="h-5 w-5 text-primary" />
+            {items.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-primary text-black rounded-full w-5 h-5 text-[10px] font-black flex items-center justify-center shadow-[0_0_10px_rgba(234,179,8,0.5)]">
+                {items.length}
+              </span>
+            )}
+          </Button>
+        </SheetTrigger>
+        <SheetContent className="w-full sm:max-w-lg bg-zinc-950 text-white border-zinc-800" dir="rtl">
+          <SheetHeader className="border-b border-zinc-900 pb-4">
+            <SheetTitle className="text-white text-3xl font-black italic tracking-tighter">הסל שלי</SheetTitle>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {isSuccess ? (
-              <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
-                <CheckCircle2 className="w-20 h-20 text-green-500" />
-                <h3 className="text-2xl font-bold text-white">ההזמנה נקלטה!</h3>
-                <p className="text-zinc-400">נא להעביר תשלום בביט למספר הפלוגה.</p>
+          {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[60vh] text-zinc-600">
+              <ShoppingCart className="h-16 w-16 mb-4 opacity-10" />
+              <p className="text-lg font-bold italic">הסל שלך ריק כרגע</p>
+            </div>
+          ) : (
+            <div className="flex flex-col h-full py-6">
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+                {items.map((item) => (
+                  <div key={item.id} className="flex justify-between items-center bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50">
+                    <div>
+                      <p className="font-bold text-white">{item.name}</p>
+                      <p className="text-xs text-zinc-500 font-medium tracking-wide">כמות: {item.quantity}</p>
+                    </div>
+                    <p className="font-black text-primary italic">₪{item.price * item.quantity}</p>
+                  </div>
+                ))}
               </div>
-            ) : items.length === 0 ? (
-              <div className="text-center py-20 text-zinc-500">הסל שלך ריק</div>
-            ) : (
-              <>
-                {/* רשימת מוצרים */}
-                <div className="space-y-4">
-                  {items.map((item) => (
-                    <div key={item.id + (item.size || "")} className="flex gap-4 bg-zinc-900/50 p-4 rounded-2xl border border-white/5">
-                      <div className="h-16 w-16 bg-zinc-800 rounded-xl overflow-hidden shrink-0">
-                        <img src={item.images[0]} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <h4 className="font-bold text-white text-sm">{item.name}</h4>
-                          <button onClick={() => removeItem(item.id)} className="text-zinc-600"><Trash2 className="w-4 h-4" /></button>
-                        </div>
-                        <p className="text-primary text-[11px] font-bold">מידה: {item.size || 'N/A'}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <div className="flex items-center bg-zinc-800 rounded-lg p-1">
-                            <button onClick={() => updateQuantity(item.id, 1)} className="p-1"><Plus className="w-3 h-3 text-white" /></button>
-                            <span className="px-2 text-white text-xs">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, -1)} className="p-1"><Minus className="w-3 h-3 text-white" /></button>
-                          </div>
-                          <span className="text-white font-bold text-sm">₪{item.price * item.quantity}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+
+              <div className="pt-6 border-t border-zinc-800 bg-zinc-950 space-y-6">
+                <div className="flex justify-between text-2xl font-black italic">
+                  <span>סה"כ לתשלום:</span>
+                  <span className="text-primary tracking-tighter">₪{total}</span>
                 </div>
 
-                {/* בחירת משלוח */}
-                <div className="space-y-4 border-t border-zinc-800 pt-6">
-                  <Label className="text-white font-bold">שיטת אספקה</Label>
-                  <RadioGroup defaultValue="pickup" onValueChange={setShippingMethod} className="grid grid-cols-2 gap-4">
-                    <Label className={`flex flex-col items-center justify-center rounded-xl border-2 p-4 cursor-pointer transition-all ${shippingMethod === 'pickup' ? 'border-primary bg-primary/5' : 'border-zinc-800 bg-zinc-900/30'}`}>
-                      <RadioGroupItem value="pickup" className="sr-only" />
-                      <MapPin className={`w-6 h-6 mb-2 ${shippingMethod === 'pickup' ? 'text-primary' : 'text-zinc-500'}`} />
-                      <span className="text-xs font-bold text-white">איסוף פלוגתי</span>
-                    </Label>
-                    <Label className={`flex flex-col items-center justify-center rounded-xl border-2 p-4 cursor-pointer transition-all ${shippingMethod === 'home' ? 'border-primary bg-primary/5' : 'border-zinc-800 bg-zinc-900/30'}`}>
-                      <RadioGroupItem value="home" className="sr-only" />
-                      <Truck className={`w-6 h-6 mb-2 ${shippingMethod === 'home' ? 'text-primary' : 'text-zinc-500'}`} />
-                      <span className="text-xs font-bold text-white">משלוח עד הבית</span>
-                    </Label>
-                  </RadioGroup>
-                </div>
-
-                {/* טופס פרטים */}
-                <form id="order-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="space-y-3">
-                    <Input {...register("fullName", { required: true })} placeholder="שם מלא" className="bg-zinc-900 border-zinc-800 text-white" />
-                    <Input {...register("phone", { required: true })} placeholder="מספר טלפון" className="bg-zinc-900 border-zinc-800 text-white font-mono" />
-                    
-                    {shippingMethod === "home" && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-3 pt-2">
-                        <Input {...register("city", { required: true })} placeholder="עיר" className="bg-zinc-900 border-zinc-800 text-white" />
-                        <div className="flex gap-2">
-                          <Input {...register("street", { required: true })} placeholder="רחוב" className="bg-zinc-900 border-zinc-800 text-white flex-[2]" />
-                          <Input {...register("houseNum", { required: true })} placeholder="בית" className="bg-zinc-900 border-zinc-800 text-white flex-1" />
-                        </div>
-                      </motion.div>
-                    )}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-black text-zinc-500 uppercase tracking-widest mr-1">שם מלא</Label>
+                    <Input name="name" required className="bg-zinc-900 border-zinc-800 h-12 focus:ring-1 focus:ring-primary" placeholder="ישראל ישראלי" />
                   </div>
-
-                  <div className="bg-zinc-900/80 p-4 rounded-xl border border-white/5 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="terms" required className="border-zinc-700" />
-                      <label htmlFor="terms" className="text-[10px] text-zinc-400">אני מאשר כי הפרטים נכונים וקראתי את תנאי ההזמנה</label>
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-black text-zinc-500 uppercase tracking-widest mr-1">טלפון</Label>
+                    <Input name="phone" required type="tel" className="bg-zinc-900 border-zinc-800 h-12" placeholder="05XXXXXXXX" />
                   </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-black text-zinc-500 uppercase tracking-widest mr-1">לאן להביא?</Label>
+                    <Input name="address" required className="bg-zinc-900 border-zinc-800 h-12" placeholder="מחלקה 2 / חדר 4" />
+                  </div>
+                  <Button type="submit" className="w-full py-8 text-xl font-black italic uppercase tracking-widest shadow-lg active:scale-95 transition-transform" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : "אישור והזמנה"}
+                  </Button>
                 </form>
-              </>
-            )}
-          </div>
-
-          {!isSuccess && items.length > 0 && (
-            <div className="p-6 bg-zinc-900 border-t border-zinc-800">
-              <div className="flex justify-between items-center mb-4 text-white">
-                <span className="opacity-60 text-sm">סה"כ לתשלום:</span>
-                <span className="text-2xl font-black text-primary">₪{total}</span>
               </div>
-              <Button 
-                form="order-form"
-                disabled={isSubmitting}
-                className="w-full bg-primary hover:bg-yellow-500 text-black font-black py-7 rounded-2xl shadow-xl"
-              >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : <Send className="w-4 h-4 ml-2" />}
-                אישור והמשך לתשלום
-              </Button>
             </div>
           )}
         </SheetContent>
       </Sheet>
+
+      {/* חלון קופץ לתשלום - מופיע אחרי שליחה מוצלחת */}
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-[90vw] sm:max-w-md rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-black italic text-center tracking-tighter">הזמנה התקבלה!</DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex flex-col gap-5 py-6">
+            <p className="text-center text-zinc-400 font-medium leading-relaxed">
+              הפרטים נשמרו במערכת.<br />כדי שנאשר סופית, שלם עכשיו:
+            </p>
+            
+            {/* כפתור פייבוקס מרכזי */}
+            <Button 
+              asChild
+              className="py-12 text-2xl font-black bg-[#00529c] hover:bg-[#00427c] text-white rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.3)] border-b-4 border-[#003d75] transition-all hover:scale-[1.02] active:scale-95"
+            >
+              <a href={PAYBOX_LINK} target="_blank" rel="noreferrer" className="flex flex-col items-center justify-center gap-1">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="w-7 h-7" />
+                  תשלום ב-PayBox
+                </div>
+                <span className="text-[10px] font-normal opacity-70 tracking-widest uppercase">קבוצת "הזמנות 603"</span>
+              </a>
+            </Button>
+
+            <div className="flex items-center gap-3">
+              <div className="h-px bg-zinc-800 flex-1" />
+              <span className="text-zinc-600 text-xs font-black italic">OR</span>
+              <div className="h-px bg-zinc-800 flex-1" />
+            </div>
+
+            {/* כפתור ביט משני */}
+            <Button 
+              asChild
+              variant="outline"
+              className="py-7 text-lg font-bold border-zinc-800 text-zinc-400 hover:bg-zinc-800 rounded-xl hover:text-white transition-colors"
+            >
+              <a href={`https://bitpay.co.il/app/pay-request?phone=${BIT_PHONE}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2">
+                <Smartphone className="w-5 h-5" />
+                תשלום ב-Bit
+                <ExternalLink className="w-4 h-4 opacity-20" />
+              </a>
+            </Button>
+          </div>
+
+          <div className="text-center border-t border-zinc-800/50 pt-4">
+            <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-[0.2em]">
+              ההזמנה תועבר לביצוע לאחר אישור הסמל
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
