@@ -15,7 +15,29 @@ const UNIT_SONGS = [
 מדי א בשלוף בארון
 הסמל אומר תכין כומתה תגלחצ נעליים
 אתה עולה משפט למ״פ אתה נכנס
-הנה יום הדין הגיע...`,
+הנה יום הדין הגיע.
+פתאום אני טיפה לחוץ שולף תירוץ אחרי תירוץ
+על המפ זה לא משפיע
+
+בהלצ שישי בצהריים
+סופ שבוע זה רק אני בס והממ של שתיים
+כל הנבחרים פה בפלוגה
+התחצפות כוננות והפקרה אחד גם על חצי מימיה
+הנה עוד שיחה מאמא
+יא איבני איך אתה תלמד
+לא מטווסים עם כל אחד
+השארת אותנו פה לבד…
+
+יום ראשון
+אמא אומרת הגזמת
+תיזהר
+השבת אצל סבא וסבתא
+אני אומר לה תירגעי
+השבוע אני נקי
+לא יהיה פה שום אירוע
+
+כל השבוע אני ספץ פתאום המפקד שוב מתפוצץ
+בסהכ רציתי פיצה`,
     special: true 
   },
   { 
@@ -24,26 +46,46 @@ const UNIT_SONGS = [
     audioSrc: "/audio/commander.mp3",
     content: `טירונות הנפצות ואבנונים
 חצי פלוגה פה חדולים
-המפ מנפיץ את המפקדים...`
+המפ מנפיץ את המפקדים
+גם אם נראה שהשחר לא יפציע לעולם
+הנה בא מ״פ חדש
+גם אם זה נראה שהשחר לא יפציע לעולם
+יאללה כולם תעשו כאן רעש
+
+מ״פ נעול, חולה על בית
+יושב לו בול במדים של זית
+אין בלבולי מח הוא נשבע
+נעלמו החדולים מהפלוגה`
+  },
+  { 
+    id: "sergeant",
+    title: "שיר לסמל", 
+    audioSrc: "/audio/sergeant.mp3",
+    content: `ניקו אחלה ניקו איזה סמל מטורף 
+כל פעם מחדש ת׳מעלה פה את הרף
+חייל שלך אני 
+תדע אני
+חייל שלך - חייל שלך`
   },
   { 
     id: "mouse",
     title: "שיר למ״מ", 
     audioSrc: "/audio/mouse.mp3",
     content: `היה היה מ״מ, קראו לו העכבר,
-תפקיד אחרי תפקיד, בבהל״צ תמיד, היום כל זה נגמר...`
+תפקיד אחרי תפקיד, בבהל״צ תמיד, היום כל זה נגמר x2.
+אווו, הוא עולה לגדוד, הוא עולה לגדוד, הוא עולה לגדוד, הוא עולה לגדוד.`
   },
   { 
     id: "amir",
     title: "שיר למפקד אמיר", 
     audioSrc: "/audio/amir.mp3",
-    content: "המפקד אמיר, יאללה המפקד אמיר, יאללה המפקד אמיר..." 
+    content: "המפקד אמיר, יאללה המפקד אמיר, יאללה המפקד אמיר, יאללה המפקד אמיר" 
   },
   { 
     id: "unit4",
     title: "שיר למחלקה 4", 
     audioSrc: "/audio/unit4.mp3",
-    content: "מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4..." 
+    content: "מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4 יותר חזק מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4 יאללה מחלקה 4" 
   }
 ];
 
@@ -51,7 +93,6 @@ export default function SongsPage() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // תיקון: גרימת העמוד להיפתח תמיד למעלה
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -63,22 +104,16 @@ export default function SongsPage() {
     } else {
       if (audioRef.current) {
         audioRef.current.src = src;
-        audioRef.current.play().catch(e => console.error("ניגון נחסם עלידי הדפדפן:", e));
+        audioRef.current.play().catch(e => console.error("Playback failed:", e));
         setPlayingId(id);
       }
     }
-  };
-
-  // פונקציה לניגון השיר הראשון (בשביל כפתור ה"נגן הכל")
-  const playFirstSong = () => {
-    toggleSong(UNIT_SONGS[0].id, UNIT_SONGS[0].audioSrc);
   };
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white pb-20" dir="rtl">
       <Navbar />
       
-      {/* אלמנט אודיו נסתר */}
       <audio ref={audioRef} onEnded={() => setPlayingId(null)} />
 
       <main className="container mx-auto px-4 pt-32">
@@ -91,20 +126,9 @@ export default function SongsPage() {
           </motion.div>
         </Link>
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-r-4 border-primary pr-8 py-2">
-          <div>
-            <h1 className="text-5xl md:text-6xl font-black italic tracking-tighter mb-4">שיאי הפלוגה</h1>
-            <p className="text-zinc-400 text-xl font-medium">המילים והצלילים שמלווים את 603</p>
-          </div>
-          
-          {/* כפתור פליי מרכזי ובולט */}
-          <Button 
-            onClick={playFirstSong}
-            className="bg-primary hover:bg-primary/90 text-black font-black px-8 py-6 rounded-2xl flex gap-3 shadow-[0_0_20px_rgba(234,179,8,0.3)] transition-all hover:scale-105"
-          >
-            <Play className="w-6 h-6 fill-current" />
-            <span className="text-lg">לחץ לניגון המנוני הפלוגה</span>
-          </Button>
+        <div className="max-w-4xl mb-16 border-r-4 border-primary pr-8 py-2">
+          <h1 className="text-5xl md:text-6xl font-black italic tracking-tighter mb-4">שיאי הפלוגה</h1>
+          <p className="text-zinc-400 text-xl font-medium">המילים והצלילים שמלווים את 603</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -116,7 +140,7 @@ export default function SongsPage() {
               transition={{ delay: i * 0.1 }}
               className={song.special ? 'md:col-span-2' : ''}
             >
-              <Card className={`relative overflow-hidden border-zinc-800 transition-all duration-500 ${playingId === song.id ? 'bg-primary/10 border-primary/40' : 'bg-zinc-900/40'}`}>
+              <Card className={`relative overflow-hidden border-zinc-800 transition-all duration-500 ${playingId === song.id ? 'bg-primary/10 border-primary/40' : 'bg-zinc-900/40 hover:bg-zinc-900/60'}`}>
                 <CardContent className="p-8">
                   <div className="flex items-start justify-between mb-8 gap-4">
                     <div className="space-y-1">
@@ -131,7 +155,6 @@ export default function SongsPage() {
                       </h3>
                     </div>
                     
-                    {/* כפתור פליי לכל שיר - בולט וברור */}
                     <Button 
                       variant={playingId === song.id ? "default" : "secondary"}
                       size="lg"
@@ -175,7 +198,7 @@ export default function SongsPage() {
         </div>
       </main>
 
-      <footer className="mt-20 py-16 border-t border-zinc-900 text-center bg-black/40">
+      <footer className="mt-20 py-16 border-t border-zinc-900 text-center bg-black/20">
         <p className="text-zinc-500 font-bold tracking-widest uppercase text-xs">פלוגה 603 | חיל ההנדסה הקרבית</p>
       </footer>
     </div>
