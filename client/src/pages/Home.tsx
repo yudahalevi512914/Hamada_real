@@ -23,13 +23,13 @@ const PRODUCTS = [
     id: "2", 
     name: "בהל\"צ שישי בצהריים", 
     price: 50, 
-    images: ["/image/products/drifit-1.PNG", "/image/products/drifit-1.PNG"],
+    images: ["/image/products/friday-1.PNG", "/image/products/friday-2.PNG"],
     requiresSize: true 
   },
   { 
     id: "3", 
     name: "פסל בהיכל", 
-    price: 60, 
+    price: 80, 
     images: ["/image/products/drifit-1.PNG", "/image/products/drifit-2.PNG","/image/products/drifit-3.PNG", "/image/products/drifit-4.PNG", "/image/products/drifit-5.PNG"],
     requiresSize: true 
   },
@@ -42,15 +42,15 @@ const PRODUCTS = [
   },
   { 
     id: "4", 
-    name: "כובע בייניש", 
-    price: 40, 
+    name: "כובע + פאצ׳ בייניש", 
+    price: 70, 
     images: ["/image/products/hat-1.PNG", "/image/products/hat-2.PNG", "/image/products/hat-3.PNG"],
     requiresSize: false 
   },
   { 
     id: "5", 
-    name: "פאטצ' בייניש", 
-    price: 20, 
+    name: "פאצ' בייניש", 
+    price: 30, 
     images: ["/image/products/patch-1.PNG", "/image/products/patch-2.PNG"],
     requiresSize: false 
   },
