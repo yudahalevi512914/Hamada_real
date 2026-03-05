@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useOrders } from "@/hooks/use-orders"; 
+import { useCart } from "@/hooks/use-cart"; // החזרתי למקור כדי שהעגלה תעבוד
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,8 +14,7 @@ import { ShoppingCart, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export function CartDrawer() {
-  // החזרתי את השמות המקוריים של המשתנים כדי למנוע קריסה
-  const { cart, cartTotal, clearCart } = useOrders();
+  const { items, total, clearCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -29,8 +28,8 @@ export function CartDrawer() {
       name: formData.get("name"),
       phone: formData.get("phone"),
       address: formData.get("address"),
-      items: cart,
-      total: cartTotal,
+      items: items,
+      total: total,
     };
 
     try {
@@ -44,19 +43,19 @@ export function CartDrawer() {
         setIsOpen(false);
         clearCart();
         
-        // במקום חלון קופץ מסובך שעלול לקרוס, נשתמש בהודעה פשוטה ובטוחה:
-        alert("הזמנתך נשלחה בהצלחה!\n\nלסיום התשלום, היכנס לקבוצת הפייבוקס:\nhttps://links.payboxapp.com/O8fomD9Ue1b");
+        // כאן הקישור - בצורה שלא שוברת את הקוד
+        alert("הזמנתך נשלחה! שלם כאן ב-PayBox:\nhttps://links.payboxapp.com/O8fomD9Ue1b");
         
         toast({
-          title: "ההזמנה בוצעה",
-          description: "נא לעבור לתשלום בפייבוקס",
+          title: "בוצע בהצלחה",
+          description: "נא לעבור לתשלום בקישור שקפץ",
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "שגיאה",
-        description: "השליחה נכשלה",
+        description: "נסה שוב",
       });
     } finally {
       setIsSubmitting(false);
@@ -68,9 +67,9 @@ export function CartDrawer() {
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="relative border-primary/20">
           <ShoppingCart className="h-5 w-5 text-primary" />
-          {cart && cart.length > 0 && (
+          {items && items.length > 0 && (
             <span className="absolute -top-2 -right-2 bg-primary text-black rounded-full w-5 h-5 text-[10px] font-bold flex items-center justify-center">
-              {cart.length}
+              {items.length}
             </span>
           )}
         </Button>
@@ -80,12 +79,12 @@ export function CartDrawer() {
           <SheetTitle className="text-white text-2xl font-black italic">הסל שלי</SheetTitle>
         </SheetHeader>
 
-        {!cart || cart.length === 0 ? (
+        {!items || items.length === 0 ? (
           <div className="py-20 text-center text-zinc-500">הסל ריק</div>
         ) : (
           <div className="flex flex-col h-full py-6">
             <div className="flex-1 overflow-y-auto space-y-4">
-              {cart.map((item: any) => (
+              {items.map((item: any) => (
                 <div key={item.id} className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-lg">
                   <span>{item.name} (x{item.quantity})</span>
                   <span className="text-primary font-bold">₪{item.price * item.quantity}</span>
@@ -96,13 +95,22 @@ export function CartDrawer() {
             <div className="pt-6 border-t border-zinc-800 space-y-4">
               <div className="flex justify-between text-xl font-bold">
                 <span>סה"כ:</span>
-                <span>₪{cartTotal}</span>
+                <span>₪{total}</span>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <Input name="name" required placeholder="שם מלא" className="bg-zinc-900 border-zinc-800" />
-                <Input name="phone" required type="tel" placeholder="טלפון" className="bg-zinc-900 border-zinc-800" />
-                <Input name="address" required placeholder="לאן להביא?" className="bg-zinc-900 border-zinc-800" />
+                <div className="space-y-2">
+                  <Label>שם מלא</Label>
+                  <Input name="name" required className="bg-zinc-900 border-zinc-800" />
+                </div>
+                <div className="space-y-2">
+                  <Label>טלפון</Label>
+                  <Input name="phone" required type="tel" className="bg-zinc-900 border-zinc-800" />
+                </div>
+                <div className="space-y-2">
+                  <Label>לאן להביא?</Label>
+                  <Input name="address" required className="bg-zinc-900 border-zinc-800" />
+                </div>
                 <Button type="submit" className="w-full py-6 text-lg font-black italic" disabled={isSubmitting}>
                   {isSubmitting ? <Loader2 className="animate-spin" /> : "אישור והזמנה"}
                 </Button>
