@@ -23,7 +23,7 @@ const PRODUCTS = [
     id: "2", 
     name: "בהל\"צ שישי בצהריים", 
     price: 50, 
-    images: ["/image/products/friday-1.PNG", "/image/products/friday-2.PNG"],
+    images: ["/image/products/friday-1.PNG", "/image/products/friday-1.PNG"],
     requiresSize: true 
   },
   { 
