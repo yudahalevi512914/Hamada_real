@@ -131,7 +131,7 @@ export default function Home() {
             </p>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              ברוכים הבאים לאתר הרשמי של הפלוגה. כאן תמצאו את המורשת, התמונות, השירים והמרצ'נדייז שלנו. תמיד ראשונים, תמיד מוכנים.
+              ברוכים הבאים לאתר הרשמי של הפלוגה. כאן תמצאו את התמונות, השירים והמרצ'נדייז שלנו..
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -167,10 +167,9 @@ export default function Home() {
                 <div className="space-y-4">
                   <h3 className="text-2xl font-bold flex items-center gap-2 justify-start text-white">
                     <Users className="text-primary w-6 h-6" />
-                    מורשת וגאווה
+                    .
                   </h3>
-                  <p className="text-muted-foreground text-lg leading-relaxed">
-                    פלוגה 603 מהווה חוד החנית של חיל ההנדסה הקרבית. אנו מתמחים בפריצת מכשולים, חבלה, לוחמת מנהרות וסיוע הנדסי בתמרון. הלוחמים שלנו נבחרים בקפידה ועוברים מסלול הכשרה מפרך כדי להיות המקצועיים ביותר בשדה הקרב.
+                  <p className="text-muted-foreground text-lg leading-relaxed"
                   </p>
                 </div>
               </div>
