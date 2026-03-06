@@ -220,7 +220,7 @@ export default function Home() {
             <div className="absolute bottom-6 right-6 z-10">
               <Link href="/gallery">
                 <Button variant="secondary" size="lg" className="rounded-xl font-bold shadow-lg">
-                  לצפייה בכל התמונות באתר
+                  כל התמונות
                   <ChevronLeft className="ms-2 w-4 h-4" />
                 </Button>
               </Link>
