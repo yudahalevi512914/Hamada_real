@@ -229,41 +229,61 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SONGS SECTION */}
-      <section id="songs" className="py-24 bg-[#09090b] relative overflow-hidden">
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
-              שירי <span className="text-primary italic">הפלוגה</span>
-            </h2>
-            <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
-          </div>
+{/* SONGS SECTION */}
+<section id="songs" className="py-24 bg-[#09090b] relative overflow-hidden">
+  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
-          <div className="max-w-4xl mx-auto mb-16">
-            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-zinc-900">
-              <iframe 
-                width="100%" 
-                height="100%" 
-                src="https://www.youtube.com/embed/euG7A3CuIlI" 
-                title="YouTube" 
-                frameBorder="0" 
-                allowFullScreen
-                className="w-full h-full"
-              ></iframe>
-            </div>
-          </div>
+  <div className="container mx-auto px-4 md:px-6 relative z-10">
+    <div className="text-center mb-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
+          שירי <span className="text-primary italic">הפלוגה</span>
+        </h2>
+        <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
+      </motion.div>
+    </div>
 
-          <div className="flex justify-center pb-8">
-            <Link href="/songs">
-              <Button size="lg" variant="outline" className="gap-4 h-16 px-8 text-xl rounded-2xl">
-                <Music className="w-6 h-6" />
-                כל השירים
-                <ChevronLeft className="w-5 h-5" />
-              </Button>
-            </Link>
+    <div className="max-w-4xl mx-auto mb-16 px-2">
+      <div className="relative aspect-video rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/5 bg-zinc-900 group">
+        <iframe 
+          width="100%" 
+          height="100%" 
+          src="https://www.youtube.com/embed/euG7A3CuIlI" 
+          title="YouTube" 
+          frameBorder="0" 
+          allowFullScreen
+          className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity duration-500"
+        ></iframe>
+      </div>
+    </div>
+
+    {/* הכפתור שהיה חסר - מוחזר כאן בעיצוב משופר */}
+    <div className="flex justify-center mt-12">
+      <Link href="/songs">
+        <motion.button
+          whileHover={{ scale: 1.05, translateY: -5 }}
+          whileTap={{ scale: 0.95 }}
+          className="group relative flex items-center gap-5 px-10 py-6 bg-zinc-900/80 backdrop-blur-xl border border-primary/40 rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:border-primary transition-all duration-300"
+        >
+          <div className="absolute inset-0 rounded-2xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10 bg-primary/20 p-3 rounded-xl">
+            <Music className="w-6 h-6 text-primary" />
           </div>
-        </div>
-      </section>
+          <div className="relative z-10 text-right">
+            <span className="block text-xl font-bold tracking-tight">לכל שירי הפלוגה</span>
+          </div>
+          <ChevronLeft className="relative z-10 w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:-translate-x-1 transition-all" />
+        </motion.button>
+      </Link>
+    </div>
+  </div>
+</section>
+
 
 
       {/* MERCH STORE */}
