@@ -157,7 +157,7 @@ export default function Home() {
               <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">מי אנחנו?</h2>
               <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
             </div>
-            
+            ...
             <div className="bg-[#18181b] rounded-3xl p-8 md:p-12 shadow-xl border border-border/50 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full" />
               <div className="flex flex-col md:flex-row gap-8 items-center relative z-10 text-right">
