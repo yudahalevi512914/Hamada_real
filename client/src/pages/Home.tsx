@@ -179,39 +179,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* GALLERY (CAROUSEL) */}
-      <section id="gallery" className="py-20">
-        <div className="container mx-auto px-4 text-center">
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-4xl font-bold mb-4">הגלריה שלנו</h2>
-            <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
-          </div>
+     {/* GALLERY (CAROUSEL) */}
+<section id="gallery" className="py-20">
+  <div className="container mx-auto px-4 text-center">
+    <div className="mb-10 text-center">
+      <h2 className="font-display text-4xl font-bold mb-4">הגלריה שלנו</h2>
+      <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
+    </div>
 
-          <div className="relative max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-background group bg-zinc-900">
-            <AnimatePresence mode="wait">
-              <motion.div 
-                key={galleryIndex} 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                exit={{ opacity: 0 }} 
-                transition={{ duration: 0.7 }} 
-                className="absolute inset-0 flex items-center justify-center text-zinc-500 font-bold"
-              >
-                 תמונה מהמסלול {galleryIndex + 1}
-              </motion.div>
-            </AnimatePresence>
-            
-            <div className="absolute bottom-6 right-6 z-10">
-              <Link href="/gallery">
-                <Button variant="secondary" size="lg" className="rounded-xl font-bold shadow-lg">
-                  לצפייה בכל התמונות באתר
-                  <ChevronLeft className="ms-2 w-4 h-4" />
-                </Button>
-              </Link>
+    <div className="relative max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-background group bg-zinc-900">
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={galleryIndex} 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          exit={{ opacity: 0 }} 
+          transition={{ duration: 0.7 }} 
+          className="absolute inset-0"
+        >
+          {/* התיקון: הצגת התמונה האמיתית מתוך רשימת התמונות */}
+          {allImages && allImages.length > 0 ? (
+            <img 
+              src={allImages[galleryIndex % allImages.length]} 
+              alt={`תמונה מהמסלול ${galleryIndex + 1}`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-zinc-500 font-bold">
+              טוען תמונות...
             </div>
-          </div>
-        </div>
-      </section>
+          )}
+        </motion.div>
+      </AnimatePresence>
+      
+      <div className="absolute bottom-6 right-6 z-10">
+        <Link href="/gallery">
+          <Button variant="secondary" size="lg" className="rounded-xl font-bold shadow-lg">
+            לצפייה בכל התמונות באתר
+            <ChevronLeft className="ms-2 w-4 h-4" />
+          </Button>
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* SONGS SECTION */}
       <section id="songs" className="py-24 bg-[#09090b] relative overflow-hidden">
