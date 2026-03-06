@@ -169,8 +169,7 @@ export default function Home() {
                     <Users className="text-primary w-6 h-6" />
                     .
                   </h3>
-                  <p className="text-muted-foreground text-lg leading-relaxed"
-                  </p>
+        
                 </div>
               </div>
             </div>
