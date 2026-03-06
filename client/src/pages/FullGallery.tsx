@@ -2,18 +2,14 @@ import { Navbar } from "@/components/Navbar";
 import { ChevronRight, ImageIcon } from "lucide-react";
 import { Link } from "wouter";
 
-// הפונקציה הזו סורקת את כל קבצי ה-jpg, jpeg, png ו-webp בתיקייה שציינת
-const imageModules = import.meta.glob("../../attached_assets/pictures/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}", { 
+// התיקון: אנחנו סורקים את תיקיית ה-public/pictures
+const imageModules = import.meta.glob("/public/pictures/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}", { 
   eager: true, 
-  query: '?url',
-  import: 'default'
+  as: 'url' 
 });
 
-
-
-
-// הופך את האובייקט לרשימה של כתובות (URLs)
-const allImages = Object.values(imageModules);
+// אנחנו מנקים את המילה /public מהנתיב כדי שהדפדפן ימצא את התמונה
+const allImages = Object.values(imageModules).map(url => url.replace('/public', ''));
 
 export default function FullGallery() {
   return (
@@ -31,7 +27,7 @@ export default function FullGallery() {
 
         {allImages.length === 0 ? (
           <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed border-border">
-            <p className="text-xl text-muted-foreground">עדיין אין תמונות בתיקיית pictures...</p>
+            <p className="text-xl text-muted-foreground">לא נמצאו תמונות בתיקיית client/public/pictures</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -41,7 +37,7 @@ export default function FullGallery() {
                   src={src} 
                   alt={`פלוגה 603 תמונה ${i + 1}`}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 cursor-pointer"
-                  loading="lazy" // שומר על מהירות האתר
+                  loading="lazy"
                 />
               </div>
             ))}
