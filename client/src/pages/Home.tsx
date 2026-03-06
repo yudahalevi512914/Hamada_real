@@ -11,6 +11,13 @@ import { Button } from "@/components/ui/button";
 import logo1 from "@assets/IMG_6514_1771755047663.jpeg";
 import logo2 from "@assets/IMG_6515_1771755047663.webp";
 
+// לוגיקת סריקת התמונות מתיקיית ה-public (חובה להגדיר מחוץ לקומפוננטה)
+const imageModules = import.meta.glob("/public/pictures/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}", { 
+  eager: true, 
+  as: 'url' 
+});
+const allImages = Object.values(imageModules).map(url => url.replace('/public', ''));
+
 const PRODUCTS = [
   { 
     id: "1", 
@@ -61,17 +68,17 @@ export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
-  // לוגיקת החלפת תמונות בגלריה (קדימון)
+  // לוגיקת החלפת תמונות בגלריה
   useEffect(() => {
+    if (allImages.length === 0) return;
     const timer = setInterval(() => {
-      setGalleryIndex((prev) => (prev + 1) % 4);
+      setGalleryIndex((prev) => (prev + 1) % allImages.length);
     }, 5000);
     return () => clearInterval(timer);
   }, []);
 
   const addToCart = (product: any) => {
     setCart(prev => {
-      // אם המוצר דורש מידה, אנחנו בודקים התאמה גם לפי ID וגם לפי מידה
       const existing = prev.find(item => item.id === product.id && item.size === product.size);
       if (existing) {
         return prev.map(item => 
@@ -104,7 +111,6 @@ export default function Home() {
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden text-center">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background z-10" />
-          <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
           <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/20 blur-[120px] rounded-full" />
         </div>
 
@@ -157,7 +163,7 @@ export default function Home() {
               <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">מי אנחנו?</h2>
               <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
             </div>
-            ...
+            
             <div className="bg-[#18181b] rounded-3xl p-8 md:p-12 shadow-xl border border-border/50 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full" />
               <div className="flex flex-col md:flex-row gap-8 items-center relative z-10 text-right">
@@ -167,11 +173,11 @@ export default function Home() {
                 <div className="space-y-4">
                   <h3 className="text-2xl font-bold flex items-center gap-2 justify-start text-white">
                     <Users className="text-primary w-6 h-6" />
-                    .
+                    לוחמי הנדסה
                   </h3>
-        <p className="text-muted-foreground text-lg leading-relaxed">״....״
-        </p>
-
+                  <p className="text-muted-foreground text-lg leading-relaxed">
+                    פלוגה 603 - חוד החנית של חיל ההנדסה.
+                  </p>
                 </div>
               </div>
             </div>
@@ -180,71 +186,61 @@ export default function Home() {
       </section>
 
      {/* GALLERY (CAROUSEL) */}
-<section id="gallery" className="py-20">
-  <div className="container mx-auto px-4 text-center">
-    <div className="mb-10 text-center">
-      <h2 className="font-display text-4xl font-bold mb-4">הגלריה שלנו</h2>
-      <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
-    </div>
+      <section id="gallery" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="mb-10 text-center">
+            <h2 className="font-display text-4xl font-bold mb-4">הגלריה שלנו</h2>
+            <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
+          </div>
 
-    <div className="relative max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-background group bg-zinc-900">
-      <AnimatePresence mode="wait">
-        <motion.div 
-          key={galleryIndex} 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          exit={{ opacity: 0 }} 
-          transition={{ duration: 0.7 }} 
-          className="absolute inset-0"
-        >
-          {/* התיקון: הצגת התמונה האמיתית מתוך רשימת התמונות */}
-          {allImages && allImages.length > 0 ? (
-            <img 
-              src={allImages[galleryIndex % allImages.length]} 
-              alt={`תמונה מהמסלול ${galleryIndex + 1}`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-zinc-500 font-bold">
-              טוען תמונות...
+          <div className="relative max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-background group bg-zinc-900">
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={galleryIndex} 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }} 
+                transition={{ duration: 0.7 }} 
+                className="absolute inset-0"
+              >
+                {allImages.length > 0 ? (
+                  <img 
+                    src={allImages[galleryIndex % allImages.length]} 
+                    alt={`תמונה ${galleryIndex + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-zinc-500 font-bold">
+                    העלה תמונות לתיקיית public/pictures
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+            
+            <div className="absolute bottom-6 right-6 z-10">
+              <Link href="/gallery">
+                <Button variant="secondary" size="lg" className="rounded-xl font-bold shadow-lg">
+                  לצפייה בכל התמונות באתר
+                  <ChevronLeft className="ms-2 w-4 h-4" />
+                </Button>
+              </Link>
             </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
-      
-      <div className="absolute bottom-6 right-6 z-10">
-        <Link href="/gallery">
-          <Button variant="secondary" size="lg" className="rounded-xl font-bold shadow-lg">
-            לצפייה בכל התמונות באתר
-            <ChevronLeft className="ms-2 w-4 h-4" />
-          </Button>
-        </Link>
-      </div>
-    </div>
-  </div>
-</section>
+          </div>
+        </div>
+      </section>
 
       {/* SONGS SECTION */}
       <section id="songs" className="py-24 bg-[#09090b] relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
-                שירי <span className="text-primary italic">הפלוגה</span>
-              </h2>
-              <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
-            </motion.div>
+            <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
+              שירי <span className="text-primary italic">הפלוגה</span>
+            </h2>
+            <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
           </div>
 
-          <div className="max-w-4xl mx-auto mb-16 px-2">
-            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/5 bg-zinc-900 group">
+          <div className="max-w-4xl mx-auto mb-16">
+            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-zinc-900">
               <iframe 
                 width="100%" 
                 height="100%" 
@@ -252,27 +248,18 @@ export default function Home() {
                 title="YouTube" 
                 frameBorder="0" 
                 allowFullScreen
-                className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity duration-500"
+                className="w-full h-full"
               ></iframe>
             </div>
           </div>
 
           <div className="flex justify-center pb-8">
             <Link href="/songs">
-              <motion.button
-                whileHover={{ scale: 1.05, translateY: -5 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative flex items-center gap-5 px-8 py-5 bg-zinc-900/80 backdrop-blur-xl border border-primary/40 rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:border-primary transition-all duration-300"
-              >
-                <div className="absolute inset-0 rounded-2xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative z-10 bg-primary/20 p-3 rounded-xl">
-                  <Music className="w-6 h-6 text-primary" />
-                </div>
-                <div className="relative z-10 text-right">
-                  <span className="block text-xl font-bold tracking-tight">כל השירים</span>
-                </div>
-                <ChevronLeft className="relative z-10 w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:-translate-x-1 transition-all" />
-              </motion.button>
+              <Button size="lg" variant="outline" className="gap-4 h-16 px-8 text-xl rounded-2xl">
+                <Music className="w-6 h-6" />
+                כל השירים
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
             </Link>
           </div>
         </div>
@@ -305,7 +292,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Global Cart Drawer */}
       <CartDrawer 
         items={cart}
         updateQuantity={updateQuantity}
